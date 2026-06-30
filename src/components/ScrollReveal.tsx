@@ -1,0 +1,51 @@
+import React from "react";
+import { motion } from "motion/react";
+
+interface ScrollRevealProps {
+  children: React.ReactNode;
+  direction?: "up" | "down" | "left" | "right" | "fade";
+  delay?: number;
+  duration?: number;
+  className?: string;
+  threshold?: number;
+}
+
+export default function ScrollReveal({
+  children,
+  direction = "up",
+  delay = 0,
+  duration = 0.8,
+  className = "",
+  threshold = 0.1,
+}: ScrollRevealProps) {
+  const directions = {
+    up: { y: 40, x: 0 },
+    down: { y: -40, x: 0 },
+    left: { x: 40, y: 0 },
+    right: { x: -40, y: 0 },
+    fade: { x: 0, y: 0 },
+  };
+
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        ...directions[direction],
+      }}
+      whileInView={{
+        opacity: 1,
+        x: 0,
+        y: 0,
+      }}
+      viewport={{ once: true, margin: "-100px", amount: threshold }}
+      transition={{
+        duration,
+        delay,
+        ease: [0.16, 1, 0.3, 1], // Premium executive ease-out bezier
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}

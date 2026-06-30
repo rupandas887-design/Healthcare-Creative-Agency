@@ -1,0 +1,6 @@
+{
+  "name": "Surgical Practice Growth Partner",
+  "description": "Strategic Healthcare Growth Specialist for Surgeon-Owned Hospitals",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
