@@ -2,20 +2,13 @@ import React, { useState, useEffect } from "react";
 import { TrackingEventLog } from "./types";
 import TrackingConsole from "./components/TrackingConsole";
 import HeroSection from "./components/HeroSection";
-import PremiumBanner from "./components/PremiumBanner";
-import ProblemSection from "./components/ProblemSection";
 import PositioningSection from "./components/PositioningSection";
-import FrameworkSection from "./components/FrameworkSection";
-import WhoWeWorkWith from "./components/WhoWeWorkWith";
 import AboutSection from "./components/AboutSection";
-import VideoSection from "./components/VideoSection";
-import FAQSection from "./components/FAQSection";
 import BookingForm from "./components/BookingForm";
 import Footer from "./components/Footer";
 import ScrollReveal from "./components/ScrollReveal";
-import SurgicalGrowthEstimator from "./components/SurgicalGrowthEstimator";
 import { motion, AnimatePresence } from "motion/react";
-import { Activity, ShieldCheck, Phone, ChevronRight, Sparkles, Menu, X } from "lucide-react";
+import { Activity, ChevronRight, Sparkles, Menu, X, MessageCircle } from "lucide-react";
 
 export default function App() {
   const [logs, setLogs] = useState<TrackingEventLog[]>([]);
@@ -87,7 +80,7 @@ export default function App() {
     let currentPct = 0;
 
     const interval = setInterval(() => {
-      currentPct += Math.floor(Math.random() * 8) + 6;
+      currentPct += Math.floor(Math.random() * 15) + 15;
       if (currentPct >= 100) {
         currentPct = 100;
         setProgress(100);
@@ -96,7 +89,7 @@ export default function App() {
         setTimeout(() => {
           setLoading(false);
           handleLogEvent("Structured JSON-LD SEO schemas initialized", "SEO Schema Engine", "Person, Organization, Video, FAQPage standard markup");
-        }, 300);
+        }, 80);
       } else {
         setProgress(currentPct);
         const msgIdx = Math.floor((currentPct / 100) * (messages.length - 1));
@@ -105,7 +98,7 @@ export default function App() {
           setLoadingText(messages[msgIdx]);
         }
       }
-    }, 60);
+    }, 15);
 
     // Scroll depth listener
     let hasReached25 = false;
@@ -257,17 +250,10 @@ export default function App() {
           </button>
           
           <button 
-            onClick={() => handleScrollToSection("about-section", "About Sunil")}
+            onClick={() => handleScrollToSection("about-section", "About")}
             className="hover:text-cyan-400 transition-colors cursor-pointer uppercase font-sans"
           >
             ABOUT
-          </button>
-          
-          <button 
-            onClick={() => handleScrollToSection("framework-section", "Solutions")}
-            className="hover:text-cyan-400 transition-colors cursor-pointer uppercase flex items-center gap-1 font-sans"
-          >
-            SOLUTIONS <span className="text-[10px] text-slate-500 font-bold">∨</span>
           </button>
           
           <button 
@@ -277,21 +263,6 @@ export default function App() {
             RESULTS
           </button>
           
-          <button 
-            onClick={() => handleScrollToSection("faq-section", "Resources")}
-            className="hover:text-cyan-400 transition-colors cursor-pointer uppercase flex items-center gap-1 font-sans"
-          >
-            RESOURCES <span className="text-[10px] text-slate-500 font-bold">∨</span>
-          </button>
-
-          <button 
-            onClick={() => handleScrollToSection("growth-estimator-section", "Estimator")}
-            className="text-cyan-400 hover:text-cyan-300 font-extrabold hover:scale-105 transition-all cursor-pointer uppercase flex items-center gap-1.5 font-sans"
-          >
-            <span>ESTIMATOR</span>
-            <span className="text-[8px] bg-cyan-400/20 px-1 py-0.5 rounded text-cyan-300 border border-cyan-400/30 tracking-normal font-mono">NEW</span>
-          </button>
-
           <button 
             onClick={() => handleScrollToSection("booking-section", "Contact")}
             className="hover:text-cyan-400 transition-colors cursor-pointer uppercase font-sans"
@@ -366,22 +337,12 @@ export default function App() {
 
               <button 
                 onClick={() => {
-                  handleScrollToSection("about-section", "About Sunil");
+                  handleScrollToSection("about-section", "About");
                   setIsMobileMenuOpen(false);
                 }}
                 className="text-2xl font-bold text-white hover:text-cyan-400 text-left transition-colors font-display py-2 min-h-[48px]"
               >
                 ABOUT
-              </button>
-
-              <button 
-                onClick={() => {
-                  handleScrollToSection("framework-section", "Solutions");
-                  setIsMobileMenuOpen(false);
-                }}
-                className="text-2xl font-bold text-white hover:text-cyan-400 text-left transition-colors font-display py-2 min-h-[48px]"
-              >
-                SOLUTIONS
               </button>
 
               <button 
@@ -392,27 +353,6 @@ export default function App() {
                 className="text-2xl font-bold text-white hover:text-cyan-400 text-left transition-colors font-display py-2 min-h-[48px]"
               >
                 RESULTS
-              </button>
-
-              <button 
-                onClick={() => {
-                  handleScrollToSection("faq-section", "Resources");
-                  setIsMobileMenuOpen(false);
-                }}
-                className="text-2xl font-bold text-white hover:text-cyan-400 text-left transition-colors font-display py-2 min-h-[48px]"
-              >
-                RESOURCES
-              </button>
-
-              <button 
-                onClick={() => {
-                  handleScrollToSection("growth-estimator-section", "Estimator");
-                  setIsMobileMenuOpen(false);
-                }}
-                className="text-2xl font-bold text-cyan-400 hover:text-cyan-300 text-left transition-colors font-display py-2 min-h-[48px] flex items-center gap-2"
-              >
-                <span>ESTIMATOR</span>
-                <span className="text-[10px] bg-cyan-400/10 px-1.5 py-0.5 rounded text-cyan-300 border border-cyan-400/20 font-mono">NEW</span>
               </button>
 
               <button 
@@ -451,7 +391,7 @@ export default function App() {
       {/* CORE FOLDS MULTI-STAGED SECTION SEQUENCES */}
       <main className="flex-1">
         
-        {/* HERO FOLD (SECTION 1) */}
+        {/* HOME SECTION */}
         <ScrollReveal direction="fade" duration={1.0}>
           <HeroSection 
             onScheduleClick={() => handleScrollToSection("booking-section", "Direct CTA From Hero")} 
@@ -461,25 +401,12 @@ export default function App() {
           />
         </ScrollReveal>
 
-        {/* INTERACTIVE PREMIUM SaaS PIPELINE BANNER */}
-        <ScrollReveal direction="up" delay={0.1}>
-          <PremiumBanner 
-            onScheduleClick={() => handleScrollToSection("booking-section", "CTA From Interactive Premium Banner")}
-            onLogEvent={handleLogEvent}
-          />
-        </ScrollReveal>
-
-        {/* THE PROBLEM SEQUENCE (SECTION 3 - Struggle cards & Leak simulator) */}
+        {/* ABOUT SECTION */}
         <ScrollReveal direction="up">
-          <ProblemSection onLogEvent={handleLogEvent} />
+          <AboutSection />
         </ScrollReveal>
 
-        {/* INTERACTIVE PREMIUM ESTIMATOR & REVENUE CALCULATOR */}
-        <ScrollReveal direction="up">
-          <SurgicalGrowthEstimator onLogEvent={handleLogEvent} />
-        </ScrollReveal>
-
-        {/* THE POSITIONING STATEMENT (SECTION 4 - Not an agency comparison matrix) */}
+        {/* RESULTS SECTION */}
         <ScrollReveal direction="up">
           <PositioningSection 
             onScheduleClick={() => handleScrollToSection("booking-section", "CTA From Positioning Matrix")} 
@@ -487,35 +414,7 @@ export default function App() {
           />
         </ScrollReveal>
 
-        {/* THE SURGICAL GROWTH FRAMEWORK™ (SECTION 5 - Infographics) */}
-        <ScrollReveal direction="up">
-          <FrameworkSection onLogEvent={handleLogEvent} />
-        </ScrollReveal>
-
-        {/* WHO WE WORK WITH (SECTION 6 & 7 - Ideal profile matchers & Reservation exclusivities) */}
-        <ScrollReveal direction="up">
-          <WhoWeWorkWith 
-            onScheduleClick={() => handleScrollToSection("booking-section", "CTA From Exclusivity Profiles")} 
-            onLogEvent={handleLogEvent} 
-          />
-        </ScrollReveal>
-
-        {/* BIOGRAPHY LETTER (SECTION 8 - Personal values & standards) */}
-        <ScrollReveal direction="up">
-          <AboutSection />
-        </ScrollReveal>
-
-        {/* VIDEO BRIEFS MASTERCLASSES (SECTION 9 - Insights video library lazy-watch) */}
-        <ScrollReveal direction="up">
-          <VideoSection onLogEvent={handleLogEvent} />
-        </ScrollReveal>
-
-        {/* STRATEGIC HOSPITAL FAQ ACCORDIONS (SECTION 10 - Critical structural inquiries) */}
-        <ScrollReveal direction="up">
-          <FAQSection onLogEvent={handleLogEvent} />
-        </ScrollReveal>
-
-        {/* DISCOVERY BOOKING PORTAL (SECTION 11 - Form entry with live Growth Report Builder) */}
+        {/* CONTACT SECTION */}
         <ScrollReveal direction="up">
           <BookingForm 
             onLogEvent={handleLogEvent} 
@@ -555,6 +454,30 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating WhatsApp Button */}
+      <div className="fixed bottom-4 right-4 z-50 print:hidden group">
+        {/* Tooltip on hover */}
+        <div className="absolute right-0 bottom-16 bg-slate-950 text-white text-[11px] font-mono tracking-wider uppercase py-1.5 px-3 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-2xl border border-white/10 transition-all">
+          Chat with us on WhatsApp
+        </div>
+        
+        {/* Subtle pulse circles */}
+        <div className="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping" style={{ animationDuration: "3s" }}></div>
+        
+        {/* Button link */}
+        <motion.a
+          href="https://wa.me/919844955100"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleLogEvent("WhatsApp Chat Clicked", "Contact", "Floating WhatsApp Button Clicked")}
+          className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl transition-shadow cursor-pointer border border-[#1ebd59] z-10"
+        >
+          <MessageCircle className="h-7 w-7 text-white fill-white/10" />
+        </motion.a>
+      </div>
 
       {/* ANALYTICS AND SECURITY VALIDATION CONSOLE (Proven conversion event logger overlay) - Set to true to show for development testing */}
       {false && (

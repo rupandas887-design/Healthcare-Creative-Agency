@@ -5,10 +5,12 @@
 export interface BookingFormInput {
   name: string;
   hospitalName: string;
+  designation?: string;
   specialty: string;
   city: string;
   mobileNumber: string;
   email: string;
+  monthlyOPD?: string;
   currentMonthlyProcedures: string;
   biggestGrowthChallenge: string;
 }

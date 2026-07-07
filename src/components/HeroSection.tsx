@@ -522,9 +522,9 @@ export default function HeroSection({ onScheduleClick, onLogEvent, city, special
           {/* Core Stripe/Linear Title matched perfectly */}
           <div className="space-y-4 sm:space-y-5 w-full">
             <motion.h1 
-              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="text-fluid-h1 font-extrabold text-white tracking-tight font-display max-w-3xl sm:max-w-4xl text-center leading-[1.15] md:leading-[1.2] mx-auto px-1"
             >
               {prefixText} <br className="hidden sm:block" />
@@ -535,9 +535,9 @@ export default function HeroSection({ onScheduleClick, onLogEvent, city, special
             
             {/* Elegant luxury subtitle explanation */}
             <motion.p 
-              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
               className="text-slate-300 text-base md:text-lg font-light max-w-2xl leading-relaxed text-center mx-auto px-1"
             >
               Eliminate critical clinical funnel leaks, establish high-efficiency sub-5-minute intake SLA's, and scale procedural volumes with high-precision operational infrastructure.
@@ -546,9 +546,9 @@ export default function HeroSection({ onScheduleClick, onLogEvent, city, special
 
           {/* Double Button CTA Suite matched exactly to the image */}
           <motion.div 
-            initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+            initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 pt-0 z-30 w-full max-w-md mx-auto px-4"
           >
             {/* Bright Solid Cyan Action Button */}

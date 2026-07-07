@@ -31,10 +31,11 @@ export default function AboutSection() {
           
           {/* LEFT COLUMN: Highly Stylized Executive Portrait & Credential Panel */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -15 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{ willChange: "transform, opacity" }}
             className="lg:col-span-5 flex flex-col justify-between space-y-6"
           >
             
@@ -99,10 +100,11 @@ export default function AboutSection() {
 
           {/* RIGHT COLUMN: Senior Executive Biography Prose */}
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 15 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+            style={{ willChange: "transform, opacity" }}
             className="lg:col-span-7 flex flex-col justify-center space-y-6"
           >
             

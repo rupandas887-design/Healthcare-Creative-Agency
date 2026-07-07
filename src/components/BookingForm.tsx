@@ -33,10 +33,12 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
   const [formData, setFormData] = useState<BookingFormInput>({
     name: "",
     hospitalName: "",
+    designation: "",
     specialty: "Orthopedics & Joint Replacement",
     city: "",
     mobileNumber: "",
     email: "",
+    monthlyOPD: "",
     currentMonthlyProcedures: "26-50",
     biggestGrowthChallenge: "High leakage of patients between outpatient department (OPD) check-in and surgery booking."
   });
@@ -87,7 +89,7 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
     let currentPct = 0;
     const interval = setInterval(() => {
-      currentPct += Math.floor(Math.random() * 8) + 5;
+      currentPct += Math.floor(Math.random() * 15) + 12;
       if (currentPct >= 100) {
         currentPct = 100;
         setLoaderProgress(100);
@@ -101,7 +103,7 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
         );
         setLoaderText(messages[msgIdx]);
       }
-    }, 120);
+    }, 40);
 
     return () => clearInterval(interval);
   }, [loading]);
@@ -113,6 +115,24 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Explicit validation check
+    if (
+      !formData.name?.trim() ||
+      !formData.hospitalName?.trim() ||
+      !formData.designation?.trim() ||
+      !formData.mobileNumber?.trim() ||
+      !formData.email?.trim() ||
+      !formData.city?.trim() ||
+      !formData.specialty ||
+      !formData.monthlyOPD?.trim() ||
+      !formData.currentMonthlyProcedures ||
+      !formData.biggestGrowthChallenge?.trim()
+    ) {
+      setErrorStatus("Please fill in all required fields.");
+      return;
+    }
+
     setLoading(true);
     setErrorStatus(null);
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
@@ -133,6 +153,29 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
       if (responseData.success && responseData.audit) {
         setAuditResult(responseData.audit);
         onLogEvent("Form Submission Successful! Growth Audit Created", "Conversion", `Submission ID ${responseData.submissionId}`);
+
+        // Construct pre-filled WhatsApp message matching exact formatting requirement
+        const messageText = `*New Operational Triage & Diagnostic Booking Request*
+
+*Full Name:* ${formData.name}
+*Hospital/Clinic:* ${formData.hospitalName}
+*Designation:* ${formData.designation}
+*Phone Number:* ${formData.mobileNumber}
+*Email:* ${formData.email}
+*City:* ${formData.city}
+*Specialty:* ${formData.specialty}
+*Monthly OPD:* ${formData.monthlyOPD}
+*Monthly Surgeries:* ${formData.currentMonthlyProcedures}
+*Message:* ${formData.biggestGrowthChallenge}
+
+Submitted from the website.`;
+
+        // URL encode the message
+        const encodedMessage = encodeURIComponent(messageText);
+        const whatsappUrl = `https://wa.me/919844955100?text=${encodedMessage}`;
+
+        // Redirect to WhatsApp
+        window.location.href = whatsappUrl;
       } else {
         throw new Error(responseData.error || "Form payload parsing failed.");
       }
@@ -508,6 +551,23 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
                   />
                 </div>
 
+                {/* New Field: Professional Designation */}
+                <div className="space-y-2">
+                  <label htmlFor="designation" className="block text-xs font-bold text-slate-300 uppercase tracking-wider font-mono text-left">
+                    Professional Designation
+                  </label>
+                  <input
+                    type="text"
+                    id="designation"
+                    name="designation"
+                    value={formData.designation || ""}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Chief Surgeon, Founder, Medical Director"
+                    required
+                    className="w-full bg-brand-navy border border-white/10 focus:border-brand-teal rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition-colors"
+                  />
+                </div>
+
                 {/* Field 3: Specialty selection */}
                 <div className="space-y-2">
                   <label htmlFor="specialty" className="block text-xs font-bold text-slate-300 uppercase tracking-wider font-mono text-left">
@@ -577,6 +637,23 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="e.g., director@mumbaispinesurgeon.com"
+                    required
+                    className="w-full bg-brand-navy border border-white/10 focus:border-brand-teal rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition-colors"
+                  />
+                </div>
+
+                {/* New Field: Monthly OPD */}
+                <div className="space-y-2">
+                  <label htmlFor="monthlyOPD" className="block text-xs font-bold text-slate-300 uppercase tracking-wider font-mono text-left">
+                    Estimated Monthly OPD Footfall
+                  </label>
+                  <input
+                    type="text"
+                    id="monthlyOPD"
+                    name="monthlyOPD"
+                    value={formData.monthlyOPD || ""}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 500+ patients"
                     required
                     className="w-full bg-brand-navy border border-white/10 focus:border-brand-teal rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition-colors"
                   />

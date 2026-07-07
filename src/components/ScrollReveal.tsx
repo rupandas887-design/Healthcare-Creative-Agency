@@ -14,15 +14,15 @@ export default function ScrollReveal({
   children,
   direction = "up",
   delay = 0,
-  duration = 0.8,
+  duration = 0.5,
   className = "",
-  threshold = 0.1,
+  threshold = 0.15,
 }: ScrollRevealProps) {
   const directions = {
-    up: { y: 40, x: 0 },
-    down: { y: -40, x: 0 },
-    left: { x: 40, y: 0 },
-    right: { x: -40, y: 0 },
+    up: { y: 30, x: 0 },
+    down: { y: -30, x: 0 },
+    left: { x: 30, y: 0 },
+    right: { x: -30, y: 0 },
     fade: { x: 0, y: 0 },
   };
 
@@ -37,11 +37,14 @@ export default function ScrollReveal({
         x: 0,
         y: 0,
       }}
-      viewport={{ once: true, margin: "-100px", amount: threshold }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px", amount: threshold }}
       transition={{
         duration,
-        delay,
-        ease: [0.16, 1, 0.3, 1], // Premium executive ease-out bezier
+        delay: delay > 0 ? Math.min(delay, 0.1) : 0, // Ensure no unnecessary delays
+        ease: [0.22, 1, 0.36, 1], // Smooth premium easing
+      }}
+      style={{
+        willChange: "transform, opacity",
       }}
       className={className}
     >
