@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { BookingFormInput, DiagnosticResult } from "../types";
 import { 
   Send, 
@@ -22,6 +23,101 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import AnimatedCounter from "./AnimatedCounter";
+
+function getClientSideFallbackReport(specialty: string, currentMonthlyVolume: number, challenge: string) {
+  const annualVol = currentMonthlyVolume * 12;
+  const potentialVol = Math.round(annualVol * 1.35); // Estimated 35% growth by sealing leaks
+  
+  // Custom revenue calculations based on typical specialty yield
+  let revenueLift = "₹45 Lakhs - ₹1.2 Crores ($55k - $150k USD) annually";
+  const specLower = specialty.toLowerCase();
+  if (specLower.includes("ortho") || specLower.includes("bone")) {
+    revenueLift = "₹60 Lakhs - ₹1.8 Crores ($75k - $220k USD) annually";
+  } else if (specLower.includes("plastic") || specLower.includes("cosmetic")) {
+    revenueLift = "₹80 Lakhs - ₹2.4 Crores ($100k - $300k USD) annually";
+  } else if (specLower.includes("cardio") || specLower.includes("heart")) {
+    revenueLift = "₹1.2 Crores - ₹3.5 Crores ($150k - $450k USD) annually";
+  } else if (specLower.includes("ophthal") || specLower.includes("eye") || specLower.includes("cataract")) {
+    revenueLift = "₹25 Lakhs - ₹80 Lakhs ($30k - $100k USD) annually";
+  }
+
+  return {
+    leakageAnalysis: [
+      {
+        stage: "PD Consultation to Recommended Procedure",
+        description: `Loss of surgical candidates due to sub-optimal follow-up coordinates. Patients given a procedure counseling recommendation are left to 'think about it' without a structured touchpoint program, leading to a high drop-off to corporate networks.`,
+        severity: "High",
+        leakageRateEst: "35% - 40% Drop-off Rate"
+      },
+      {
+        stage: "Digital / Direct Practice Enquiries",
+        description: `Lack of lead qualification boundaries. Front-office responders take too long (>4 hours) to call back web or chat enquiries, causing candidates to call competitors instead of booking outpatient department (OPD) slots.`,
+        severity: "High",
+        leakageRateEst: "45% Opportunity Spill"
+      },
+      {
+        stage: "OPD Booking to Consultation Check-In",
+        description: `High 'No-Show' leakage due to poor automated confirmation sequences. Front office focuses on clerical tasks instead of delivering reassurance pathways for surgical anxiety.`,
+        severity: "Medium",
+        leakageRateEst: "20% Drop-off"
+      }
+    ],
+    operationalBenchmarks: [
+      {
+        metric: "Front-Office Lead Response Time",
+        averagepractice: "4.5 Hours",
+        targetperformance: "< 5 Minutes",
+        impact: "Increases Enquiry-to-OPD conversion speed by 62%"
+      },
+      {
+        metric: "Patient Counseling Follow-Up Cycles",
+        averagepractice: "1 Single Follow-up",
+        targetperformance: "4 Structured touchpoints over 14 days",
+        impact: "Generates +28% surgery confirmations from pending patient lists"
+      },
+      {
+        metric: "Referral Ecosystem Visibility",
+        averagepractice: "Manual tracking / Unrecorded",
+        targetperformance: "Complete digital tracking & appreciation feedback loop",
+        impact: "Drives consistent 15% increase in surgical patient word-of-mouth"
+      }
+    ],
+    actionableRoadmap: [
+      {
+        pillar: "Visibility",
+        actionItems: [
+          "Audit and label every source of digital, reference, and panel enquiries.",
+          "Establish a unified lead capture center directly integrated with a light clinical ledger."
+        ],
+        expectedOutcome: "100% visibility of patient origination details.",
+        timeline: "Weeks 1 - 2"
+      },
+      {
+        pillar: "Tracking",
+        actionItems: [
+          "Deploy custom conversion trackers at the counseling desk to flag pending recommendations.",
+          "Introduce a visual daily pipeline highlighting patient drop-off stages."
+        ],
+        expectedOutcome: "Clear accountability over where patients stall.",
+        timeline: "Weeks 3 - 4"
+      },
+      {
+        pillar: "Conversion Optimization / Coordination",
+        actionItems: [
+          "Train front office and medical counselors on Acquire OPD's Surgical Anxiety Management (SAM) guidelines.",
+          "Implement structured, highly reassuring SMS and WhatsApp feedback pathways."
+        ],
+        expectedOutcome: "Increase counselor-to-procedure confirmation rates.",
+        timeline: "Weeks 5 - 6"
+      }
+    ],
+    estimatedOpportunity: {
+      currentAnnualprocedures: annualVol,
+      potentialAnnualprocedures: potentialVol,
+      estimatedRevenueLift: revenueLift
+    }
+  };
+}
 
 interface BookingFormProps {
   onLogEvent: (action: string, category: string, label: string) => void;
@@ -138,53 +234,68 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
     setErrorStatus(null);
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
 
+    const targetUrl = "/api/discussion";
+    console.log("Submitting to:", targetUrl);
     console.log("Submitting:", formData);
 
+    const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || (import.meta as any).env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const supabaseKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || (import.meta as any).env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    
+    console.log("SUPABASE_URL:", supabaseUrl);
+    console.log("SUPABASE_ANON_KEY configured:", !!supabaseKey);
+
+    let useFallback = false;
+
     try {
-      const response = await fetch("/api/discussion", {
+      try {
+        const response = await fetch(targetUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
-        let errMsg = "Server encountered an issue during submission.";
-        let errCode = "";
-        let errDetails = "";
-        let errHint = "";
-        
-        try {
-          const responseText = await response.text();
+        if (response.status === 404) {
+          console.warn("API Route /api/discussion returned 404. Falling back to direct client-side Supabase insertion...");
+          useFallback = true;
+        } else {
+          let errMsg = "Server encountered an issue during submission.";
+          let errCode = "";
+          let errDetails = "";
+          let errHint = "";
+          
           try {
-            const errData = JSON.parse(responseText);
-            if (errData) {
-              if (errData.error) errMsg = errData.error;
-              if (errData.code) errCode = errData.code;
-              if (errData.details) errDetails = errData.details;
-              if (errData.hint) errHint = errData.hint;
+            const responseText = await response.text();
+            try {
+              const errData = JSON.parse(responseText);
+              if (errData) {
+                if (errData.error) errMsg = errData.error;
+                if (errData.code) errCode = errData.code;
+                if (errData.details) errDetails = errData.details;
+                if (errData.hint) errHint = errData.hint;
+              }
+            } catch (_) {
+              // Not a JSON response, maybe HTML or raw text
+              errMsg = `HTTP ${response.status}: ${responseText.substring(0, 300)}`;
             }
-          } catch (_) {
-            // Not a JSON response, maybe HTML or raw text
-            errMsg = `HTTP ${response.status}: ${responseText.substring(0, 300)}`;
-          }
-        } catch (_) {}
+          } catch (_) {}
 
-        const customError: any = new Error(errMsg);
-        customError.code = errCode;
-        customError.details = errDetails;
-        customError.hint = errHint;
-        throw customError;
-      }
+          const customError: any = new Error(errMsg);
+          customError.code = errCode;
+          customError.details = errDetails;
+          customError.hint = errHint;
+          throw customError;
+        }
+      } else {
+        const responseData = await response.json();
+        console.log("Insert Result:", responseData);
+        
+        if (responseData.success && responseData.audit) {
+          setAuditResult(responseData.audit);
+          onLogEvent("Form Submission Successful! Growth Audit Created", "Conversion", `Submission ID ${responseData.submissionId}`);
 
-      const responseData = await response.json();
-      console.log("Insert Result:", responseData);
-      
-      if (responseData.success && responseData.audit) {
-        setAuditResult(responseData.audit);
-        onLogEvent("Form Submission Successful! Growth Audit Created", "Conversion", `Submission ID ${responseData.submissionId}`);
-
-        // Construct pre-filled WhatsApp message matching exact formatting requirement
-        const messageText = `*New Operational Triage & Diagnostic Booking*
+          // Construct pre-filled WhatsApp message matching exact formatting requirement
+          const messageText = `*New Operational Triage & Diagnostic Booking*
 
 *Full Name:* ${formData.name}
 *Hospital/Clinic:* ${formData.hospitalName}
@@ -200,24 +311,107 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
 Submitted successfully from Acquire OPD website.`;
 
-        // URL encode the message
-        const encodedMessage = encodeURIComponent(messageText);
-        
-        // Detect mobile/desktop to open WhatsApp app or WhatsApp Web
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const whatsappUrl = isMobile
-          ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
-          : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
+          // URL encode the message
+          const encodedMessage = encodeURIComponent(messageText);
+          
+          // Detect mobile/desktop to open WhatsApp app or WhatsApp Web
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          const whatsappUrl = isMobile
+            ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
+            : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
 
-        // Redirect only after successful database insertion
-        window.location.href = whatsappUrl;
-      } else {
-        const customError: any = new Error(responseData.error || "Form payload parsing failed.");
-        customError.code = responseData.code;
-        customError.details = responseData.details;
-        customError.hint = responseData.hint;
+          // Redirect only after successful database insertion
+          window.location.href = whatsappUrl;
+          return;
+        } else {
+          const customError: any = new Error(responseData.error || "Form payload parsing failed.");
+          customError.code = responseData.code;
+          customError.details = responseData.details;
+          customError.hint = responseData.hint;
+          throw customError;
+        }
+      }
+    } catch (error: any) {
+      if (error && error.message && error.message.includes("Failed to fetch")) {
+        console.warn("Network fetch failed. Falling back to direct client-side Supabase insertion...");
+        useFallback = true;
+      } else if (!useFallback) {
+        throw error;
+      }
+    }
+
+    if (useFallback) {
+      if (!supabaseUrl || !supabaseKey) {
+        throw new Error("Direct client-side fallback failed: Supabase credentials are not configured in the environment.");
+      }
+
+      console.log("Executing direct client-side Supabase insert flow...");
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const submissionId = `ss_${Date.now()}`;
+
+      const { data: insertData, error: insertError } = await supabase
+        .from("submissions")
+        .insert([{
+          id: submissionId,
+          name: formData.name,
+          hospital_name: formData.hospitalName,
+          designation: formData.designation || "Not provided",
+          specialty: formData.specialty,
+          city: formData.city || "Not provided",
+          mobile_number: formData.mobileNumber || "Not provided",
+          email: formData.email,
+          monthly_opd: formData.monthlyOPD,
+          current_monthly_procedures: formData.currentMonthlyProcedures,
+          biggest_growth_challenge: formData.biggestGrowthChallenge,
+          submitted_at: new Date().toISOString()
+        }])
+        .select();
+
+      if (insertError) {
+        console.error("Direct Supabase Insert Error:", insertError);
+        const customError: any = new Error(`Direct database persistence failed: ${insertError.message}`);
+        customError.code = insertError.code;
+        customError.details = insertError.details;
+        customError.hint = insertError.hint;
         throw customError;
       }
+
+      console.log("Insert Result (Direct Supabase):", insertData);
+      
+      const proceduresNumeric = parseInt(formData.currentMonthlyProcedures, 10) || 12;
+      const clientSideAudit = getClientSideFallbackReport(formData.specialty, proceduresNumeric, formData.biggestGrowthChallenge);
+      setAuditResult(clientSideAudit);
+      onLogEvent("Form Submission Successful! Direct Growth Audit Created", "Conversion", `Submission ID ${submissionId}`);
+
+      // Construct pre-filled WhatsApp message matching exact formatting requirement
+      const messageText = `*New Operational Triage & Diagnostic Booking*
+
+*Full Name:* ${formData.name}
+*Hospital/Clinic:* ${formData.hospitalName}
+*Designation:* ${formData.designation || "Not provided"}
+*Phone:* ${formData.mobileNumber}
+*Email:* ${formData.email}
+*City:* ${formData.city}
+*Specialty:* ${formData.specialty}
+*Monthly OPD:* ${formData.monthlyOPD || "Not provided"}
+*Monthly Surgeries:* ${formData.currentMonthlyProcedures}
+*Current Challenge:* ${formData.biggestGrowthChallenge}
+*Additional Notes:* None
+
+Submitted successfully from Acquire OPD website.`;
+
+      // URL encode the message
+      const encodedMessage = encodeURIComponent(messageText);
+      
+      // Detect mobile/desktop to open WhatsApp app or WhatsApp Web
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const whatsappUrl = isMobile
+        ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
+        : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
+
+      // Redirect only after successful database insertion
+      window.location.href = whatsappUrl;
+    }
     } catch (error: any) {
       console.error("Full Error:", error);
       if (error) {
