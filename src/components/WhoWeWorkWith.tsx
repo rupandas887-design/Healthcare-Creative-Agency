@@ -71,7 +71,7 @@ export default function WhoWeWorkWith({ onScheduleClick, onLogEvent }: WhoWeWork
             Ideal Partnership Profiles
           </h2>
           <p className="text-slate-300 text-sm md:text-base font-light leading-relaxed">
-            Sunil Sulegai does not consult with general practitioners or corporate conglomerate hospitals. I work exclusively with surgeon-founders willing to introduce operational rigor.
+            Acquire OPD does not consult with general practitioners or corporate conglomerate hospitals. We work exclusively with surgeon-founders willing to introduce operational rigor.
           </p>
         </div>
 

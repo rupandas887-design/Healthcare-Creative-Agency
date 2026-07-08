@@ -169,13 +169,17 @@ export default function App() {
             <div className="max-w-md w-full space-y-8 relative z-10 text-center sm:text-left">
               
               {/* Strategic Logo Badge */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 border-b border-white/10 pb-5">
-                <div className="h-12 w-12 rounded-xl bg-brand-teal text-brand-navy flex items-center justify-center font-display font-black text-lg shadow-xl animate-pulse">
-                  SS
-                </div>
-                <div className="text-center sm:text-left">
-                  <h2 className="text-white font-extrabold text-base tracking-tight leading-tight">Sunil Sulegai</h2>
-                  <span className="text-[10px] font-mono tracking-widest text-brand-teal uppercase font-bold">
+              <div className="flex flex-col sm:flex-row items-center gap-6 border-b border-white/10 pb-6">
+                <img 
+                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                  alt="Acquire OPD Logo" 
+                  className="h-[120px] md:h-[140px] w-auto object-contain block opacity-100 animate-pulse" 
+                  style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}
+                  referrerPolicy="no-referrer" 
+                />
+                <div className="text-center sm:text-left space-y-1">
+                  <h2 className="text-white font-extrabold text-2xl tracking-tight leading-none">Acquire OPD</h2>
+                  <span className="text-xs font-mono tracking-widest text-brand-teal uppercase font-bold block">
                     Surgical Practice Growth Partner
                   </span>
                 </div>
@@ -220,52 +224,53 @@ export default function App() {
       </AnimatePresence>
 
       {/* HEADER NAVIGATION (Aesthetic, pristine desktop menu) */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#071B34]/95 backdrop-blur-md border-b border-white/10 p-3.5 px-4 md:px-6 lg:px-12 flex items-center justify-between print:hidden shadow-md">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[#FFFFFF] border-b border-[#E5E7EB] h-[76px] md:h-[88px] lg:h-[98px] px-4 md:px-6 lg:px-12 flex items-center justify-between print:hidden shadow-sm">
         <div 
           onClick={() => {
             handleScrollToSection("hero-section", "Home");
             setIsMobileMenuOpen(false);
           }}
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-[18px] cursor-pointer group"
         >
           {/* Stunning S-Wave Custom Logo like the image */}
-          <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-cyan-400 to-cyan-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.25)] border border-cyan-400/40">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 text-cyan-400 fill-none stroke-current" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M18 6 C15 3, 9 3, 6 6 C3 9, 3 15, 6 18 C9 21, 15 21, 18 18" />
-              <path d="M14 10 C12 8, 10 10, 10 12 C10 14, 14 14, 14 16 C14 18, 12 20, 10 18" />
-            </svg>
-          </div>
-          <span className="font-extrabold text-base md:text-lg text-white tracking-tight group-hover:text-cyan-400 transition-colors font-display">
-            Sunil Sulegai
+          <img 
+            src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+            alt="Acquire OPD Logo" 
+            className="h-[52px] md:h-[62px] lg:h-[75px] w-auto object-contain block opacity-100" 
+            style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)', objectPosition: 'center' }}
+            referrerPolicy="no-referrer" 
+          />
+          <span className="font-bold text-[20px] md:text-[24px] text-[#0EA5E9] tracking-tight group-hover:text-[#38BDF8] transition-colors font-display leading-none">
+            Acquire OPD
           </span>
         </div>
 
         {/* Links Navigation matching the screenshot perfectly */}
-        <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black tracking-widest text-slate-300">
+        <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black tracking-widest text-[#0F172A]">
           <button 
             onClick={() => handleScrollToSection("hero-section", "Home")}
-            className="hover:text-cyan-400 transition-colors cursor-pointer uppercase font-sans"
+            className="hover:text-[#0EA5E9] transition-colors cursor-pointer uppercase font-sans"
           >
             HOME
           </button>
           
           <button 
             onClick={() => handleScrollToSection("about-section", "About")}
-            className="hover:text-cyan-400 transition-colors cursor-pointer uppercase font-sans"
+            className="hover:text-[#0EA5E9] transition-colors cursor-pointer uppercase font-sans"
           >
             ABOUT
           </button>
           
           <button 
             onClick={() => handleScrollToSection("positioning-section", "Results")}
-            className="hover:text-cyan-400 transition-colors cursor-pointer uppercase font-sans"
+            className="hover:text-[#0EA5E9] transition-colors cursor-pointer uppercase font-sans"
           >
             RESULTS
           </button>
           
           <button 
             onClick={() => handleScrollToSection("booking-section", "Contact")}
-            className="hover:text-cyan-400 transition-colors cursor-pointer uppercase font-sans"
+            className="hover:text-[#0EA5E9] transition-colors cursor-pointer uppercase font-sans"
           >
             CONTACT
           </button>
@@ -285,7 +290,9 @@ export default function App() {
           {/* Animated Hamburger Trigger */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden relative h-11 w-11 flex flex-col items-center justify-center text-cyan-400 hover:text-white transition-colors cursor-pointer focus:outline-none z-50"
+            className={`lg:hidden relative h-11 w-11 flex flex-col items-center justify-center transition-colors cursor-pointer focus:outline-none z-50 ${
+              isMobileMenuOpen ? "text-white hover:text-[#0EA5E9]" : "text-[#0F172A] hover:text-[#0EA5E9]"
+            }`}
             aria-label="Toggle navigation menu"
           >
             <div className="space-y-1.5 w-6">
@@ -321,6 +328,23 @@ export default function App() {
           >
             {/* Nav List */}
             <div className="flex flex-col gap-5 text-left mt-4">
+              {/* Premium Mobile Menu Brand Header */}
+              <div className="flex items-center gap-4 mb-3">
+                <img 
+                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                  alt="Acquire OPD Logo" 
+                  className="h-[52px] w-auto object-contain block opacity-100" 
+                  style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}
+                  referrerPolicy="no-referrer" 
+                />
+                <div>
+                  <h4 className="font-extrabold text-xl text-white tracking-tight font-display leading-tight">
+                    Acquire OPD
+                  </h4>
+                  <span className="text-[9px] font-mono text-slate-400 block tracking-widest uppercase font-bold leading-none mt-1">Surgical Growth Partner</span>
+                </div>
+              </div>
+
               <span className="text-[10px] font-mono tracking-widest font-black text-cyan-500 uppercase border-b border-cyan-500/10 pb-2">
                 NAVIGATION MENU
               </span>

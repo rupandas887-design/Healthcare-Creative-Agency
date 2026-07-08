@@ -148,7 +148,7 @@ export default function TrackingConsole({ logs, onClear }: TrackingConsoleProps)
                     <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
                       <div className="font-bold text-slate-200">Person Schema</div>
-                      <div className="text-slate-400 text-[10px] font-mono">Type: Person | Sunil Sulegai</div>
+                      <div className="text-slate-400 text-[10px] font-mono">Type: Person | Acquire OPD</div>
                       <div className="text-slate-500 text-[10px] mt-1 italic">Declares surgical practice growth credentials.</div>
                     </div>
                   </div>
@@ -222,7 +222,7 @@ export default function TrackingConsole({ logs, onClear }: TrackingConsoleProps)
 
           {/* Footer */}
           <div className="bg-slate-900 border-t border-slate-800 p-2 text-center text-slate-500 text-[10px]">
-            Sunil Sulegai Analytics Validator v1.0
+            Acquire OPD Analytics Validator v1.0
           </div>
         </motion.div>
       )}

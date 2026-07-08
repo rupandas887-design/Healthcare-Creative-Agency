@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
+import { createClient } from "@supabase/supabase-js";
 
 // Load environment variables
 dotenv.config();
@@ -13,8 +14,29 @@ const PORT = 3000;
 // Body parser
 app.use(express.json());
 
-// In-Memory Database for Submissions
+// In-Memory Database for Submissions (Fallback)
 const submissions: any[] = [];
+
+// Lazy-initialization of Supabase Client
+let supabaseClient: any = null;
+function getSupabase() {
+  if (!supabaseClient) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey) {
+      try {
+        supabaseClient = createClient(supabaseUrl, supabaseKey);
+        console.log("[Supabase] Client initialized successfully.");
+      } catch (err) {
+        console.error("[Supabase] Failed to initialize client:", err);
+      }
+    } else {
+      console.warn("[Supabase] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing. Database persistence to Supabase will be inactive.");
+    }
+  }
+  return supabaseClient;
+}
 
 // Lazy-initialization of Gemini client helper
 let aiClient: GoogleGenAI | null = null;
@@ -75,15 +97,46 @@ app.post("/api/discussion", async (req, res) => {
   submissions.unshift(submission);
   console.log("New Strategic Discussion submitted:", submission);
 
+  // Safely persist to Supabase database if configured
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase
+        .from("submissions")
+        .insert([{
+          id: submission.id,
+          name: submission.name,
+          hospital_name: submission.hospitalName,
+          designation: submission.designation,
+          specialty: submission.specialty,
+          city: submission.city,
+          mobile_number: submission.mobileNumber,
+          email: submission.email,
+          monthly_opd: submission.monthlyOPD,
+          current_monthly_procedures: submission.currentMonthlyProcedures,
+          biggest_growth_challenge: submission.biggestGrowthChallenge,
+          submitted_at: submission.submittedAt
+        }]);
+
+      if (error) {
+        console.warn("[Supabase] Failed to insert submission:", error.message);
+      } else {
+        console.log("[Supabase] Submission persisted successfully.");
+      }
+    } catch (err: any) {
+      console.warn("[Supabase] Exception writing to Supabase:", err?.message || err);
+    }
+  }
+
   const currentProceduresNumeric = parseInt(currentMonthlyProcedures, 10) || 12;
 
   try {
     const ai = getGemini();
 
     if (ai) {
-      // Prompt construction using Sunil's framework
+      // Prompt construction using Acquire OPD's framework
       const prompt = `
-        You are Sunil Sulegai, a Strategic Healthcare Growth Specialist for Surgeon-Owned Hospitals (NOT a generic marketing agency).
+        You are Acquire OPD, a Strategic Healthcare Growth Specialist for Surgeon-Owned Hospitals (NOT a generic marketing agency).
         
         Analyze the following intake details from a hospital founder/surgeon-owner who just completed your growth discovery questionnaire:
         - Hospital Name: "${submission.hospitalName}"
@@ -105,7 +158,7 @@ app.post("/api/discussion", async (req, res) => {
         contents: prompt,
         config: {
           systemInstruction: `
-            You are Sunil Sulegai - Surgical Practice Growth Partner. You help surgeon-owned surgical centers and specialty practices build predictable, repeatable volume through data-driven patient conversion ecosystems, front-office coordination, and operational accountability. You analyze practice metrics with diagnostic precision.
+            You are Acquire OPD - Surgical Practice Growth Partner. You help surgeon-owned surgical centers and specialty practices build predictable, repeatable volume through data-driven patient conversion ecosystems, front-office coordination, and operational accountability. You analyze practice metrics with diagnostic precision.
           `,
           responseMimeType: "application/json",
           responseSchema: {
@@ -201,14 +254,52 @@ app.post("/api/discussion", async (req, res) => {
 });
 
 // GET Endpoint to fetch total submissions or check status (useful for tracking console)
-app.get("/api/submissions", (req, res) => {
+app.get("/api/submissions", async (req, res) => {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("submissions")
+        .select("*")
+        .order("submitted_at", { ascending: false });
+
+      if (!error && data) {
+        const mappedSubmissions = data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          hospitalName: item.hospital_name || item.hospitalName,
+          designation: item.designation,
+          specialty: item.specialty,
+          city: item.city,
+          mobileNumber: item.mobile_number || item.mobileNumber,
+          email: item.email,
+          monthlyOPD: item.monthly_opd || item.monthlyOPD,
+          currentMonthlyProcedures: item.current_monthly_procedures || item.currentMonthlyProcedures,
+          biggestGrowthChallenge: item.biggest_growth_challenge || item.biggestGrowthChallenge,
+          submittedAt: item.submitted_at || item.submittedAt
+        }));
+
+        return res.json({
+          count: mappedSubmissions.length,
+          recent: mappedSubmissions.slice(0, 5),
+          fromDatabase: true
+        });
+      } else {
+        console.warn("[Supabase] Error reading from submissions table, using memory:", error?.message);
+      }
+    } catch (err: any) {
+      console.warn("[Supabase] Exception reading from Supabase submissions, using memory:", err?.message || err);
+    }
+  }
+
   res.json({
     count: submissions.length,
-    recent: submissions.slice(0, 5)
+    recent: submissions.slice(0, 5),
+    fromDatabase: false
   });
 });
 
-// Helper: Custom Strategic Fallback Generator matching Sunil's framework
+// Helper: Custom Strategic Fallback Generator matching Acquire OPD's framework
 function getFallbackReport(specialty: string, currentMonthlyVolume: number, challenge: string) {
   const annualVol = currentMonthlyVolume * 12;
   const potentialVol = Math.round(annualVol * 1.35); // Estimated 35% growth by sealing leaks
@@ -290,7 +381,7 @@ function getFallbackReport(specialty: string, currentMonthlyVolume: number, chal
       {
         pillar: "Conversion Optimization / Coordination",
         actionItems: [
-          "Train front office and medical counselors on Sunil's Surgical Anxiety Management (SAM) guidelines.",
+          "Train front office and medical counselors on Acquire OPD's Surgical Anxiety Management (SAM) guidelines.",
           "Implement structured, highly reassuring SMS and WhatsApp feedback pathways."
         ],
         expectedOutcome: "Increase counselor-to-procedure confirmation rates.",

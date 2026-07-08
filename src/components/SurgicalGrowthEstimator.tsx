@@ -617,7 +617,7 @@ export default function SurgicalGrowthEstimator({ onLogEvent }: SurgicalGrowthEs
                           <span className="text-brand-teal font-black text-sm">{simTargetConversion}%</span>
                         </div>
                         <p className="text-[10px] text-slate-400 font-sans mb-2 leading-relaxed">
-                          By streamlining post-OPD counseling, we establish a target standard matching Sunil's elite baseline (typically 54%).
+                          By streamlining post-OPD counseling, we establish a target standard matching Acquire OPD's elite baseline (typically 54%).
                         </p>
                         <input 
                           type="range"
@@ -630,7 +630,7 @@ export default function SurgicalGrowthEstimator({ onLogEvent }: SurgicalGrowthEs
                         />
                         <div className="flex justify-between text-[8px] font-mono text-slate-500 pt-1">
                           <span>Current: {simCurrentConversion}%</span>
-                          <span>Sunil's System Standard: 54% - 65%</span>
+                          <span>Acquire OPD's System Standard: 54% - 65%</span>
                         </div>
                       </div>
 
@@ -883,7 +883,7 @@ export default function SurgicalGrowthEstimator({ onLogEvent }: SurgicalGrowthEs
             <span className="text-[10px] font-mono text-cyan-400 uppercase font-black tracking-widest">CRITICAL DISCIPLINE SYSTEM</span>
             <h3 className="text-xl font-bold font-display text-white mt-1">Multi-Stage Surgical Patient Journey</h3>
             <p className="text-xs text-slate-400 font-sans mt-1">
-               Sunils trademark operational pipeline mapping. The 12 stages must flow seamlessly with zero leakage. Each step lights up as calculations run.
+               Acquire OPD's trademark operational pipeline mapping. The 12 stages must flow seamlessly with zero leakage. Each step lights up as calculations run.
             </p>
           </div>
 
@@ -1087,7 +1087,7 @@ export default function SurgicalGrowthEstimator({ onLogEvent }: SurgicalGrowthEs
                 {SPECIALTY_METRICS[specialty]?.bestPractice}
               </span>
               <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
-                Target performance standard established under Sunil's operations.
+                Target performance standard established under Acquire OPD's operations.
               </p>
             </div>
 
@@ -1523,7 +1523,7 @@ export default function SurgicalGrowthEstimator({ onLogEvent }: SurgicalGrowthEs
                 <span className="text-[10px] font-mono text-emerald-400 font-black uppercase tracking-wider">Congratulations, {leadContact}!</span>
                 <h4 className="text-lg font-bold font-display text-white">Your Hospital Growth Report is Ready for Dispatch</h4>
                 <p className="text-xs text-slate-300 max-w-xl font-sans leading-relaxed">
-                  Sunil Sulegai's operational consulting desk has received your benchmark calibrations. We will compile a comprehensive 12-page operational diagnostic audit PDF and send it to <strong>{leadEmail}</strong> within 12 business hours.
+                  Acquire OPD's operational consulting desk has received your benchmark calibrations. We will compile a comprehensive 12-page operational diagnostic audit PDF and send it to <strong>{leadEmail}</strong> within 12 business hours.
                 </p>
               </div>
               <button

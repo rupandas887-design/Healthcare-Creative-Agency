@@ -9,7 +9,7 @@ export default function Footer({ onLogEvent }: FooterProps) {
   
   const handleWhatappClick = () => {
     onLogEvent("WhatsApp Link Clicked", "Conversion", "Footer Social Contact");
-    window.open("https://wa.me/919876543210?text=Hello%20Sunil,%20I'm%20interested%20in%2520discussing%2520my%2520hospital's%2520surgical%2520growth%2520system.", "_blank");
+    window.open("https://wa.me/919876543210?text=Hello%20Acquire%20OPD,%20I'm%20interested%20in%2520discussing%2520my%2520hospital's%2520surgical%2520growth%2520system.", "_blank");
   };
 
   const handleLinkedinClick = () => {
@@ -30,7 +30,7 @@ export default function Footer({ onLogEvent }: FooterProps) {
         {/* Left Side: Summary credentials */}
         <div className="md:col-span-6 space-y-4 text-left">
           <div className="space-y-1">
-            <h3 className="text-white font-extrabold font-display text-lg tracking-tight">Sunil Sulegai</h3>
+            <h3 className="text-white font-extrabold font-display text-lg tracking-tight">Acquire OPD</h3>
             <span className="text-[10px] font-mono uppercase tracking-widest text-brand-teal font-extrabold block leading-none">
               Surgical Practice Growth Partner
             </span>
@@ -72,12 +72,12 @@ export default function Footer({ onLogEvent }: FooterProps) {
 
             {/* Email */}
             <a
-              href="mailto:sunil@surgicalgrowth.com"
+              href="mailto:hello@acquireopd.com"
               onClick={() => onLogEvent("Email Client Opened", "Engagement", "Footer Email Link")}
               className="flex items-center gap-2 hover:text-brand-teal transition-colors text-left"
             >
               <Mail className="h-4.5 w-4.5 text-brand-teal shrink-0" />
-              <span>sunil@surgicalgrowth.com</span>
+              <span>hello@acquireopd.com</span>
             </a>
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function Footer({ onLogEvent }: FooterProps) {
       {/* Baseline credits */}
       <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-slate-400 font-mono">
         <div>
-          © 2026 Sunil Sulegai Consulting. All proprietary frameworks & diagnostic metrics reserved.
+          © 2026 Acquire OPD. All proprietary frameworks & diagnostic metrics reserved.
         </div>
         <div className="flex gap-4">
           <span className="cursor-pointer hover:text-white uppercase">Privacy Principles</span>

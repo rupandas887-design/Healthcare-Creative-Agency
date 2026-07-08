@@ -213,7 +213,7 @@ Submitted from the website.`;
           </h2>
           
           <p className="text-slate-300 text-sm md:text-base font-light leading-relaxed">
-            Submit your clinical metrics below to explore a strategic partnership slot with Sunil Sulegai. Your submission instantly initializes a customized operational diagnostic report based on your specialty.
+            Submit your clinical metrics below to explore a strategic partnership slot with Acquire OPD. Your submission instantly initializes a customized operational diagnostic report based on your specialty.
           </p>
         </div>
 
@@ -226,7 +226,7 @@ Submitted from the website.`;
               <div className="space-y-1.5 text-left">
                 <span className="text-[10px] sm:text-xs font-mono font-bold text-brand-teal tracking-wider flex items-center gap-1.5 uppercase">
                   <Sparkles className="h-4 w-4 text-brand-teal animate-spin-slow" />
-                  Sunil Sulegai Operational Growth Audit Report
+                  Acquire OPD Operational Growth Audit Report
                 </span>
                 
                 <h3 className="text-2xl sm:text-3xl font-black text-white font-display">
@@ -383,7 +383,7 @@ Submitted from the website.`;
 
             {/* Validation Notice footer */}
             <div className="pt-6 border-t border-white/10 text-center text-[10px] text-slate-400 leading-relaxed max-w-2xl mx-auto">
-              This tactical audit is synthesized dynamically based on Sunil Sulegai’s core frameworks and your input metrics. Actioning these changes successfully requires in-person operational integration rather than standard agency setup.
+              This tactical audit is synthesized dynamically based on Acquire OPD’s core frameworks and your input metrics. Actioning these changes successfully requires in-person operational integration rather than standard agency setup.
               
               <div className="mt-5 flex items-center justify-center gap-1.5 text-brand-teal font-extrabold uppercase tracking-widest text-[9px] sm:text-xs print:hidden">
                 <CheckCircle className="h-4 w-4 text-brand-teal animate-pulse" /> 
@@ -709,7 +709,7 @@ Submitted from the website.`;
               <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
                 
                 <div className="text-left text-[11px] leading-relaxed text-slate-400 max-w-sm">
-                  Submissions are kept strictly confidential under active clinical coordination boundaries. Sunil Sulegai implements growth systems directly for independent practices.
+                  Submissions are kept strictly confidential under active clinical coordination boundaries. Acquire OPD implements growth systems directly for independent practices.
                 </div>
 
                 <button

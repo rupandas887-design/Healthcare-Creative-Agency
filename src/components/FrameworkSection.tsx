@@ -108,7 +108,7 @@ export default function FrameworkSection({ onLogEvent }: FrameworkSectionProps) 
           </h2>
           
           <p className="text-slate-300 text-sm md:text-base font-light leading-relaxed">
-            A battle-tested consulting blueprint designed by Sunil Sulegai to restructure internal clinic coordination, seal patient conversion leaks, and scale sustainable procedure volume.
+            A battle-tested consulting blueprint designed by Acquire OPD to restructure internal clinic coordination, seal patient conversion leaks, and scale sustainable procedure volume.
           </p>
         </div>
 
@@ -223,7 +223,7 @@ export default function FrameworkSection({ onLogEvent }: FrameworkSectionProps) 
                 {/* Growth Optimized Column */}
                 <div className="space-y-2 p-5 rounded-xl bg-brand-teal/[0.02] border border-brand-teal/15 shadow-3xs">
                   <span className="text-[10px] font-mono uppercase text-brand-teal font-extrabold tracking-wider block">
-                    ✓ Sunil Sulegai Standard
+                    ✓ Acquire OPD Standard
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed font-sans font-light">
                     {pillars[activePillar].optimized}

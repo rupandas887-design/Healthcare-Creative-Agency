@@ -26,7 +26,7 @@ export default function ProblemSection({ onLogEvent }: ProblemSectionProps) {
   const [avgRev, setAvgRev] = useState<number>(150000); // 1.5 Lakhs custom ticket
 
   const conversionRate = inquiries > 0 ? (surgeries / inquiries) * 100 : 0;
-  const benchmarkRate = 54; // Elite baseline: 54% Inquiry-to-surgery conversion under Sunil's operations
+  const benchmarkRate = 54; // Elite baseline: 54% Inquiry-to-surgery conversion under Acquire OPD's operations
   
   const potentialSurgeries = Math.round(inquiries * (benchmarkRate / 100));
   const lostSurgeries = Math.max(0, potentialSurgeries - surgeries);
@@ -291,7 +291,7 @@ export default function ProblemSection({ onLogEvent }: ProblemSectionProps) {
                       -<AnimatedCounter value={lostSurgeries} /> <span className="text-xs font-normal text-slate-300">lost / mo</span>
                     </div>
                     <span className="text-[9px] text-slate-400 mt-1 block">
-                      Compared to Sunil's optimized standard blueprint
+                      Compared to Acquire OPD's optimized standard blueprint
                     </span>
                   </div>
                 </div>
@@ -327,7 +327,7 @@ export default function ProblemSection({ onLogEvent }: ProblemSectionProps) {
               {/* Action and feedback footer */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6 pt-5 border-t border-white/10 relative z-10">
                 <div className="text-[10px] text-slate-400 leading-tight">
-                  Let’s deploy Sunil Sulegai's operational audit frameworks to recover this margin.
+                  Let’s deploy Acquire OPD's operational audit frameworks to recover this margin.
                 </div>
                 <button
                   onClick={() => {

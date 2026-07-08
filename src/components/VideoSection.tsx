@@ -21,13 +21,13 @@ export default function VideoSection({ onLogEvent }: VideoSectionProps) {
         {
           heading: "The Speed to Call Barrier",
           metric: "9x Conversion Crash",
-          content: "Spoken by Sunil: 'Once a patient inquiries about an orthopedic, plastic, or bariatric procedure, they are in high-anxiety search mode. If your clinic takes 1 hour to callback, show-up drops by over 300%. If you take 4 hours, they are already booked with a corporate hospital.'",
+          content: "Advisor Insight: 'Once a patient inquiries about an orthopedic, plastic, or bariatric procedure, they are in high-anxiety search mode. If your clinic takes 1 hour to callback, show-up drops by over 300%. If you take 4 hours, they are already booked with a corporate hospital.'",
           remedy: "Implement an automated pipeline coordinator workflow to guarantee inquiries receive clinical pre-screening callbacks in under 5 minutes."
         },
         {
           heading: "Marketing Metrics vs Clinic Reality",
           metric: "Disconnected Pipelines",
-          content: "Spoken by Sunil: 'Marketing reports say 100 high-income leads generated. Reception says only 5 were real. Why? Because agencies focus entirely on clicks, but fail to support internal diagnostic coordination, leaving qualified patients stranded in spreadsheets.'",
+          content: "Advisor Insight: 'Marketing reports say 100 high-income leads generated. Reception says only 5 were real. Why? Because agencies focus entirely on clicks, but fail to support internal diagnostic coordination, leaving qualified patients stranded in spreadsheets.'",
           remedy: "Establish clean daily dashboard tracking to bridge counselor efforts and ad spend on a single shared screen."
         }
       ]
@@ -42,13 +42,13 @@ export default function VideoSection({ onLogEvent }: VideoSectionProps) {
         {
           heading: "The Counseling Chasm",
           metric: "₹15 Lakhs Leaked / Month",
-          content: "Spoken by Sunil: 'Most clinic coordinators are passive call takers. They quote the package pricing tier once, then wait. But clinical patients procrastinate out of medical fear. They require supportive, systematic touchpoints, not pricing negotiations.'",
-          remedy: "Deploy Sunil's pre-admission diagnostic scripts, mapping helpful medical follow-ups on Day 2, Day 5, and Day 10."
+          content: "Advisor Insight: 'Most clinic coordinators are passive call takers. They quote the package pricing tier once, then wait. But clinical patients procrastinate out of medical fear. They require supportive, systematic touchpoints, not pricing negotiations.'",
+          remedy: "Deploy Acquire OPD's pre-admission diagnostic scripts, mapping helpful medical follow-ups on Day 2, Day 5, and Day 10."
         },
         {
           heading: "Compounded Pipeline Recovery",
           metric: "+28% Surgeries Sealed",
-          content: "Spoken by Sunil: 'Sustained, empathetic callback sequences over 14 days increase patient retention by almost 30%. All that is required is structure and systematic counselor accountability.'",
+          content: "Advisor Insight: 'Sustained, empathetic callback sequences over 14 days increase patient retention by almost 30%. All that is required is structure and systematic counselor accountability.'",
           remedy: "Set up the visual counselor tracking board to flag and resolve pending approvals instantly."
         }
       ]
@@ -63,13 +63,13 @@ export default function VideoSection({ onLogEvent }: VideoSectionProps) {
         {
           heading: "The Corporate Overhead Bottleneck",
           metric: "Bureaucratic Booking Inertia",
-          content: "Spoken by Sunil: 'Corporate hospital networks treat patients like diagnostic numbers, routing them through cold call-centers. A surgeon-owned clinic provides pristine, high-empathy guidance. Leverage this agility as a primary growth tool.'",
+          content: "Advisor Insight: 'Corporate hospital networks treat patients like diagnostic numbers, routing them through cold call-centers. A surgeon-owned clinic provides pristine, high-empathy guidance. Leverage this agility as a primary growth tool.'",
           remedy: "Frame your doctor brand around specific clinical mastery and high-end procedural focus rather than generic healthcare pricing."
         },
         {
           heading: "Sustaining organic patient loops",
           metric: "100% Peer-to-Peer Trust",
-          content: "Spoken by Sunil: 'Surgical practices thrive on reputation. By coordinating discharge checkups, you transform happy recovery outcomes into structured local review loops that no corporate ad blitz can compete with.'",
+          content: "Advisor Insight: 'Surgical practices thrive on reputation. By coordinating discharge checkups, you transform happy recovery outcomes into structured local review loops that no corporate ad blitz can compete with.'",
           remedy: "Integrate automatic checkup reminders to compile patient experience feedback systematically."
         }
       ]
@@ -222,7 +222,7 @@ export default function VideoSection({ onLogEvent }: VideoSectionProps) {
                           <Volume2 className="h-4 w-4" />
                         </div>
                         <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block font-bold">
-                          Sunil's Transcription Notes
+                          Advisor Transcription Notes
                         </span>
                         <p className="text-slate-300 text-xs md:text-sm leading-relaxed italic font-light font-sans">
                           {watchVideoSessions[activeVideo].slides[activeSlide].content}

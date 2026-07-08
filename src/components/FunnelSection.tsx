@@ -244,7 +244,7 @@ export default function FunnelSection({ onLogEvent }: FunnelSectionProps) {
       subLabel: "Surgery confirmation & final conversion.",
       iconName: "checkcircle",
       leakage: "Hospitals depending on passive, organic patient recommendations.",
-      countermeasure: "Launch Sunil's embedded high-gratitude digital patient review loop.",
+      countermeasure: "Launch Acquire OPD's embedded high-gratitude digital patient review loop.",
       outcome: "Sustained clinical digital authority with 4.9-star public trust rating.",
       aiPrediction: 98,
       vitals: { hr: "90 bpm", load: "30%", flow: "1.8 GB/s" },
@@ -332,19 +332,15 @@ export default function FunnelSection({ onLogEvent }: FunnelSectionProps) {
             <div className="space-y-8">
               {/* Launcher/Branding logo */}
               <div className="flex items-center gap-3 border-b border-cyan-500/10 pb-5">
-                <div className="relative h-10 w-10 flex items-center justify-center">
-                  {/* Glowing 3D hexagon stack */}
-                  <div className="absolute inset-0 rounded bg-cyan-400/10 border border-cyan-400/40 transform rotate-45 animate-spin-slow"></div>
-                  <div className="absolute inset-1.5 rounded bg-cyan-500/20 border border-cyan-300/30 transform -rotate-12"></div>
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-cyan-400 relative z-10 fill-none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5" />
-                    <line x1="12" y1="2" x2="12" y2="22" />
-                    <line x1="2" y1="8.5" x2="22" y2="15.5" />
-                    <line x1="2" y1="15.5" x2="22" y2="8.5" />
-                  </svg>
-                </div>
+                <img 
+                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                  alt="Acquire OPD Logo" 
+                  className="h-10 w-10 object-contain block opacity-100" 
+                  style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}
+                  referrerPolicy="no-referrer" 
+                />
                 <div>
-                  <h4 className="text-white font-extrabold text-[13px] tracking-tight leading-none uppercase">SUNIL&apos;S ORBIT</h4>
+                  <h4 className="text-white font-extrabold text-[13px] tracking-tight leading-none uppercase">ACQUIRE OPD</h4>
                   <span className="text-[9px] font-mono tracking-widest text-cyan-400/60 uppercase font-bold block mt-1">Surgical Console</span>
                 </div>
               </div>
@@ -418,7 +414,7 @@ export default function FunnelSection({ onLogEvent }: FunnelSectionProps) {
                   <span className="text-[9px] font-mono tracking-wider font-extrabold text-cyan-300 uppercase">AI INSIGHTS</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[8px] font-mono font-bold text-slate-500 uppercase block">Powered by Sunil&apos;s AI</span>
+                  <span className="text-[8px] font-mono font-bold text-slate-500 uppercase block">Powered by Acquire OPD&apos;s AI</span>
                   <p className="text-[10px] text-slate-300 font-sans leading-relaxed">
                     Surgical coordinator conversion probability optimizes by <strong className="text-emerald-400">+18%</strong> when pre-admission SLAs are strictly kept under 5 minutes.
                   </p>

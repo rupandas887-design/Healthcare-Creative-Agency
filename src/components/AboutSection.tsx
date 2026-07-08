@@ -48,11 +48,17 @@ export default function AboutSection() {
                 
                 {/* Executive avatar representation */}
                 <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-full bg-brand-teal text-brand-navy font-bold text-2xl flex items-center justify-center font-display border-2 border-white shadow-md uppercase group-hover:scale-105 transition-transform duration-300">
-                    SS
+                  <div className="h-16 w-16 rounded-full bg-brand-navy border-2 border-white/20 shadow-md flex items-center justify-center overflow-hidden p-1.5 group-hover:scale-105 transition-transform duration-300">
+                    <img 
+                      src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                      alt="Acquire OPD Logo" 
+                      className="w-full h-full object-contain block opacity-100" 
+                      style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}
+                      referrerPolicy="no-referrer" 
+                    />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-display text-white">Sunil Sulegai</h3>
+                    <h3 className="text-xl font-bold font-display text-white">Acquire OPD</h3>
                     <div className="text-[10px] font-mono text-brand-teal uppercase tracking-widest font-extrabold block">
                       Surgical Practice Growth Partner
                     </div>
@@ -134,7 +140,7 @@ export default function AboutSection() {
               </p>
               
               <p>
-                My engagement method is hands-on. Sunil Sulegai does not sell 'impressions.' I audit clinical callback speeds, restructure pre-admission counselor scripts, and align front-office routines to secure true procedure confirmations.
+                My engagement method is hands-on. Acquire OPD does not sell 'impressions.' We audit clinical callback speeds, restructure pre-admission counselor scripts, and align front-office routines to secure true procedure confirmations.
               </p>
             </div>
 
@@ -153,7 +159,7 @@ export default function AboutSection() {
             {/* Strategic signature */}
             <div className="pt-4 flex items-center justify-between">
               <div>
-                <span className="text-sm font-black text-white font-sans tracking-tight block text-left">Sunil Sulegai</span>
+                <span className="text-sm font-black text-white font-sans tracking-tight block text-left">Acquire OPD</span>
                 <span className="text-[10px] font-mono text-brand-gold uppercase font-bold text-left block">Principal Advisor</span>
               </div>
             </div>

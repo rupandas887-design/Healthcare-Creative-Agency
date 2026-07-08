@@ -1,5 +1,5 @@
 /**
- * Types & Interfaces for Sunil Sulegai - Surgical Practice Growth Partner
+ * Types & Interfaces for Acquire OPD - Surgical Practice Growth Partner
  */
 
 export interface BookingFormInput {
