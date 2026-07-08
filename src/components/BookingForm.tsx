@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { BookingFormInput, DiagnosticResult } from "../types";
@@ -161,6 +162,7 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
   const [loading, setLoading] = useState(false);
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [successStatus, setSuccessStatus] = useState<string | null>(null);
   const [auditResult, setAuditResult] = useState<DiagnosticResult | null>(null);
 
   const [loaderProgress, setLoaderProgress] = useState(0);
@@ -232,121 +234,24 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
     setLoading(true);
     setErrorStatus(null);
+    setSuccessStatus(null);
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
 
-    const targetUrl = "/api/discussion";
-    console.log("Submitting to:", targetUrl);
-    console.log("Submitting:", formData);
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-    const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || (import.meta as any).env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const supabaseKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || (import.meta as any).env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-    
-    console.log("SUPABASE_URL:", supabaseUrl);
-    console.log("SUPABASE_ANON_KEY configured:", !!supabaseKey);
+    console.log("Supabase URL:", !!SUPABASE_URL);
+    console.log("Supabase Key:", !!SUPABASE_ANON_KEY);
 
-    let useFallback = false;
-
-    try {
-      try {
-        const response = await fetch(targetUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.warn("API Route /api/discussion returned 404. Falling back to direct client-side Supabase insertion...");
-          useFallback = true;
-        } else {
-          let errMsg = "Server encountered an issue during submission.";
-          let errCode = "";
-          let errDetails = "";
-          let errHint = "";
-          
-          try {
-            const responseText = await response.text();
-            try {
-              const errData = JSON.parse(responseText);
-              if (errData) {
-                if (errData.error) errMsg = errData.error;
-                if (errData.code) errCode = errData.code;
-                if (errData.details) errDetails = errData.details;
-                if (errData.hint) errHint = errData.hint;
-              }
-            } catch (_) {
-              // Not a JSON response, maybe HTML or raw text
-              errMsg = `HTTP ${response.status}: ${responseText.substring(0, 300)}`;
-            }
-          } catch (_) {}
-
-          const customError: any = new Error(errMsg);
-          customError.code = errCode;
-          customError.details = errDetails;
-          customError.hint = errHint;
-          throw customError;
-        }
-      } else {
-        const responseData = await response.json();
-        console.log("Insert Result:", responseData);
-        
-        if (responseData.success && responseData.audit) {
-          setAuditResult(responseData.audit);
-          onLogEvent("Form Submission Successful! Growth Audit Created", "Conversion", `Submission ID ${responseData.submissionId}`);
-
-          // Construct pre-filled WhatsApp message matching exact formatting requirement
-          const messageText = `*New Operational Triage & Diagnostic Booking*
-
-*Full Name:* ${formData.name}
-*Hospital/Clinic:* ${formData.hospitalName}
-*Designation:* ${formData.designation || "Not provided"}
-*Phone:* ${formData.mobileNumber}
-*Email:* ${formData.email}
-*City:* ${formData.city}
-*Specialty:* ${formData.specialty}
-*Monthly OPD:* ${formData.monthlyOPD || "Not provided"}
-*Monthly Surgeries:* ${formData.currentMonthlyProcedures}
-*Current Challenge:* ${formData.biggestGrowthChallenge}
-*Additional Notes:* None
-
-Submitted successfully from Acquire OPD website.`;
-
-          // URL encode the message
-          const encodedMessage = encodeURIComponent(messageText);
-          
-          // Detect mobile/desktop to open WhatsApp app or WhatsApp Web
-          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-          const whatsappUrl = isMobile
-            ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
-            : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
-
-          // Redirect only after successful database insertion
-          window.location.href = whatsappUrl;
-          return;
-        } else {
-          const customError: any = new Error(responseData.error || "Form payload parsing failed.");
-          customError.code = responseData.code;
-          customError.details = responseData.details;
-          customError.hint = responseData.hint;
-          throw customError;
-        }
-      }
-    } catch (error: any) {
-      if (error && error.message && error.message.includes("Failed to fetch")) {
-        console.warn("Network fetch failed. Falling back to direct client-side Supabase insertion...");
-        useFallback = true;
-      } else if (!useFallback) {
-        throw error;
-      }
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      setErrorStatus("Supabase environment variables are missing.");
+      setLoading(false);
+      return;
     }
 
-    if (useFallback) {
-      if (!supabaseUrl || !supabaseKey) {
-        throw new Error("Direct client-side fallback failed: Supabase credentials are not configured in the environment.");
-      }
-
+    try {
       console.log("Executing direct client-side Supabase insert flow...");
-      const supabase = createClient(supabaseUrl, supabaseKey);
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const submissionId = `ss_${Date.now()}`;
 
       const { data: insertData, error: insertError } = await supabase
@@ -369,64 +274,85 @@ Submitted successfully from Acquire OPD website.`;
 
       if (insertError) {
         console.error("Direct Supabase Insert Error:", insertError);
-        const customError: any = new Error(`Direct database persistence failed: ${insertError.message}`);
-        customError.code = insertError.code;
-        customError.details = insertError.details;
-        customError.hint = insertError.hint;
-        throw customError;
+        console.log("error.code:", insertError.code);
+        console.log("error.message:", insertError.message);
+        console.log("error.details:", insertError.details);
+        console.log("error.hint:", insertError.hint);
+        
+        let visualError = insertError.message || "Database insert failed.";
+        if (insertError.code) visualError += ` (Code: ${insertError.code})`;
+        if (insertError.details) visualError += ` (Details: ${insertError.details})`;
+        if (insertError.hint) visualError += ` (Hint: ${insertError.hint})`;
+        
+        setErrorStatus(visualError);
+        return;
       }
 
       console.log("Insert Result (Direct Supabase):", insertData);
+      onLogEvent("Form Submission Successful! Direct Growth Audit Created", "Conversion", `Submission ID ${submissionId}`);
+
+      setSuccessStatus("Diagnostic Audit request submitted successfully. Redirecting to WhatsApp...");
       
       const proceduresNumeric = parseInt(formData.currentMonthlyProcedures, 10) || 12;
       const clientSideAudit = getClientSideFallbackReport(formData.specialty, proceduresNumeric, formData.biggestGrowthChallenge);
-      setAuditResult(clientSideAudit);
-      onLogEvent("Form Submission Successful! Direct Growth Audit Created", "Conversion", `Submission ID ${submissionId}`);
 
       // Construct pre-filled WhatsApp message matching exact formatting requirement
-      const messageText = `*New Operational Triage & Diagnostic Booking*
+      const messageText = `🏥 *New Operational Triage & Diagnostic Booking*
 
-*Full Name:* ${formData.name}
-*Hospital/Clinic:* ${formData.hospitalName}
-*Designation:* ${formData.designation || "Not provided"}
-*Phone:* ${formData.mobileNumber}
-*Email:* ${formData.email}
-*City:* ${formData.city}
-*Specialty:* ${formData.specialty}
-*Monthly OPD:* ${formData.monthlyOPD || "Not provided"}
-*Monthly Surgeries:* ${formData.currentMonthlyProcedures}
-*Current Challenge:* ${formData.biggestGrowthChallenge}
-*Additional Notes:* None
+👤 *Full Name:*
+${formData.name}
 
-Submitted successfully from Acquire OPD website.`;
+🏥 *Hospital / Clinic:*
+${formData.hospitalName}
 
-      // URL encode the message
+💼 *Designation:*
+${formData.designation || "Not provided"}
+
+📱 *Phone Number:*
+${formData.mobileNumber}
+
+📧 *Email:*
+${formData.email}
+
+📍 *City:*
+${formData.city}
+
+🩺 *Specialty:*
+${formData.specialty}
+
+📈 *Monthly OPD:*
+${formData.monthlyOPD || "Not provided"}
+
+🏥 *Monthly Surgeries:*
+${formData.currentMonthlyProcedures}
+
+⚠️ *Current Challenges:*
+${formData.biggestGrowthChallenge}
+
+📝 *Additional Notes:*
+None
+
+🌐 Submitted from:
+Acquire OPD Website`;
+
+      // URL encode the message properly
       const encodedMessage = encodeURIComponent(messageText);
       
       // Detect mobile/desktop to open WhatsApp app or WhatsApp Web
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const whatsappUrl = isMobile
-        ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
+        ? `https://wa.me/919844955100?text=${encodedMessage}`
         : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
 
-      // Redirect only after successful database insertion
-      window.location.href = whatsappUrl;
-    }
+      // Delay for 1.5 seconds to let the user read the success message in the form UI, then redirect and render report
+      setTimeout(() => {
+        setAuditResult(clientSideAudit);
+        window.location.href = whatsappUrl;
+      }, 1500);
+
     } catch (error: any) {
       console.error("Full Error:", error);
-      if (error) {
-        console.error("Code:", error.code);
-        console.error("Message:", error.message);
-        console.error("Details:", error.details);
-        console.error("Hint:", error.hint);
-      }
-      
-      let visualError = error.message || "An unexpected error occurred.";
-      if (error.code) visualError += ` (Code: ${error.code})`;
-      if (error.details) visualError += ` (Details: ${error.details})`;
-      if (error.hint) visualError += ` (Hint: ${error.hint})`;
-      
-      setErrorStatus(visualError);
+      setErrorStatus(error.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -976,9 +902,16 @@ Submitted successfully from Acquire OPD website.`;
                 </button>
               </div>
 
+              {successStatus && (
+                <div className="p-4 bg-brand-teal/10 border border-brand-teal/20 text-brand-teal rounded-xl flex items-center gap-2 text-xs text-left">
+                  <CheckCircle className="h-4.5 w-4.5 shrink-0 text-brand-teal" />
+                  <span>{successStatus}</span>
+                </div>
+              )}
+
               {errorStatus && (
                 <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-xl flex items-center gap-2 text-xs text-left">
-                  <AlertCircle className="h-4.5 w-4.5 shrink-0" />
+                  <AlertCircle className="h-4.5 w-4.5 shrink-0 text-rose-300" />
                   <span>{errorStatus}</span>
                 </div>
               )}
