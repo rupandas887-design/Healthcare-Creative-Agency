@@ -138,6 +138,8 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
     setErrorStatus(null);
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
 
+    console.log("Submitting:", formData);
+
     try {
       const response = await fetch("/api/discussion", {
         method: "POST",
@@ -147,16 +149,35 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
       if (!response.ok) {
         let errMsg = "Server encountered an issue during submission.";
+        let errCode = "";
+        let errDetails = "";
+        let errHint = "";
+        
         try {
-          const errData = await response.json();
-          if (errData && errData.error) {
-            errMsg = errData.error;
+          const responseText = await response.text();
+          try {
+            const errData = JSON.parse(responseText);
+            if (errData) {
+              if (errData.error) errMsg = errData.error;
+              if (errData.code) errCode = errData.code;
+              if (errData.details) errDetails = errData.details;
+              if (errData.hint) errHint = errData.hint;
+            }
+          } catch (_) {
+            // Not a JSON response, maybe HTML or raw text
+            errMsg = `HTTP ${response.status}: ${responseText.substring(0, 300)}`;
           }
         } catch (_) {}
-        throw new Error(errMsg);
+
+        const customError: any = new Error(errMsg);
+        customError.code = errCode;
+        customError.details = errDetails;
+        customError.hint = errHint;
+        throw customError;
       }
 
       const responseData = await response.json();
+      console.log("Insert Result:", responseData);
       
       if (responseData.success && responseData.audit) {
         setAuditResult(responseData.audit);
@@ -191,11 +212,27 @@ Submitted successfully from Acquire OPD website.`;
         // Redirect only after successful database insertion
         window.location.href = whatsappUrl;
       } else {
-        throw new Error(responseData.error || "Form payload parsing failed.");
+        const customError: any = new Error(responseData.error || "Form payload parsing failed.");
+        customError.code = responseData.code;
+        customError.details = responseData.details;
+        customError.hint = responseData.hint;
+        throw customError;
       }
-    } catch (err: any) {
-      console.error("Failed standard POST request during booking submission:", err);
-      setErrorStatus(err.message || "An unexpected error occurred. Connection could not be established.");
+    } catch (error: any) {
+      console.error("Full Error:", error);
+      if (error) {
+        console.error("Code:", error.code);
+        console.error("Message:", error.message);
+        console.error("Details:", error.details);
+        console.error("Hint:", error.hint);
+      }
+      
+      let visualError = error.message || "An unexpected error occurred.";
+      if (error.code) visualError += ` (Code: ${error.code})`;
+      if (error.details) visualError += ` (Details: ${error.details})`;
+      if (error.hint) visualError += ` (Hint: ${error.hint})`;
+      
+      setErrorStatus(visualError);
     } finally {
       setLoading(false);
     }
@@ -748,7 +785,7 @@ Submitted successfully from Acquire OPD website.`;
               {errorStatus && (
                 <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-xl flex items-center gap-2 text-xs text-left">
                   <AlertCircle className="h-4.5 w-4.5 shrink-0" />
-                  <span>{errorStatus} Please try submitting again.</span>
+                  <span>{errorStatus}</span>
                 </div>
               )}
 
