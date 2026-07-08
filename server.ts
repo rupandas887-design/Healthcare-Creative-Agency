@@ -99,33 +99,39 @@ app.post("/api/discussion", async (req, res) => {
 
   // Safely persist to Supabase database if configured
   const supabase = getSupabase();
-  if (supabase) {
-    try {
-      const { error } = await supabase
-        .from("submissions")
-        .insert([{
-          id: submission.id,
-          name: submission.name,
-          hospital_name: submission.hospitalName,
-          designation: submission.designation,
-          specialty: submission.specialty,
-          city: submission.city,
-          mobile_number: submission.mobileNumber,
-          email: submission.email,
-          monthly_opd: submission.monthlyOPD,
-          current_monthly_procedures: submission.currentMonthlyProcedures,
-          biggest_growth_challenge: submission.biggestGrowthChallenge,
-          submitted_at: submission.submittedAt
-        }]);
+  if (!supabase) {
+    console.error("[Supabase] Database client is not configured/active.");
+    return res.status(500).json({ error: "Supabase database client is not configured or could not be initialized." });
+  }
 
-      if (error) {
-        console.warn("[Supabase] Failed to insert submission:", error.message);
-      } else {
-        console.log("[Supabase] Submission persisted successfully.");
-      }
-    } catch (err: any) {
-      console.warn("[Supabase] Exception writing to Supabase:", err?.message || err);
+  try {
+    const { error } = await supabase
+      .from("submissions")
+      .insert([{
+        id: submission.id,
+        name: submission.name,
+        hospital_name: submission.hospitalName,
+        designation: submission.designation,
+        specialty: submission.specialty,
+        city: submission.city,
+        mobile_number: submission.mobileNumber,
+        email: submission.email,
+        monthly_opd: submission.monthlyOPD,
+        current_monthly_procedures: submission.currentMonthlyProcedures,
+        biggest_growth_challenge: submission.biggestGrowthChallenge,
+        submitted_at: submission.submittedAt
+      }]);
+
+    if (error) {
+      console.error("[Supabase] Failed to insert submission:", error.message);
+      return res.status(500).json({ error: `Database persistence failed: ${error.message}` });
+    } else {
+      console.log("[Supabase] Submission persisted successfully.");
     }
+  } catch (err: any) {
+    const errMsg = err?.message || err;
+    console.error("[Supabase] Exception writing to Supabase:", errMsg);
+    return res.status(500).json({ error: `Database exception: ${errMsg}` });
   }
 
   const currentProceduresNumeric = parseInt(currentMonthlyProcedures, 10) || 12;

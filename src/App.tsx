@@ -18,6 +18,23 @@ export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showStickyCTA, setShowStickyCTA] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [whatsappFloatingUrl, setWhatsappFloatingUrl] = useState("https://wa.me/919844955100");
+
+  useEffect(() => {
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const message = `Hello Acquire OPD,
+
+I'm interested in learning how you can help grow our hospital's OPD and surgical volume.
+
+Please contact me to discuss your Operational Healthcare Strategy services.
+
+Thank you.`;
+    const encodedMessage = encodeURIComponent(message);
+    const url = isMobileDevice
+      ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
+    setWhatsappFloatingUrl(url);
+  }, []);
 
   // Dynamic state for URL personalization (City & Specialty contexts)
   const [personalization, setPersonalization] = useState({
@@ -491,7 +508,7 @@ export default function App() {
         
         {/* Button link */}
         <motion.a
-          href="https://wa.me/919844955100"
+          href={whatsappFloatingUrl}
           target="_blank"
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1 }}

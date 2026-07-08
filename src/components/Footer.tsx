@@ -9,12 +9,24 @@ export default function Footer({ onLogEvent }: FooterProps) {
   
   const handleWhatappClick = () => {
     onLogEvent("WhatsApp Link Clicked", "Conversion", "Footer Social Contact");
-    window.open("https://wa.me/919876543210?text=Hello%20Acquire%20OPD,%20I'm%20interested%20in%2520discussing%2520my%2520hospital's%2520surgical%2520growth%2520system.", "_blank");
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const message = `Hello Acquire OPD,
+
+I would like to discuss hospital growth, patient acquisition, and surgical optimization.
+
+Please get in touch with me.
+
+Thank you.`;
+    const encodedMessage = encodeURIComponent(message);
+    const url = isMobile
+      ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
+    window.open(url, "_blank");
   };
 
   const handleLinkedinClick = () => {
     onLogEvent("LinkedIn Link Clicked", "Social Engagement", "Footer Social Contact");
-    window.open("https://linkedin.com", "_blank");
+    window.open("https://www.linkedin.com/in/sunilsulegai", "_blank");
   };
 
   return (
@@ -72,12 +84,12 @@ export default function Footer({ onLogEvent }: FooterProps) {
 
             {/* Email */}
             <a
-              href="mailto:hello@acquireopd.com"
+              href="mailto:acquireopd@gmail.com"
               onClick={() => onLogEvent("Email Client Opened", "Engagement", "Footer Email Link")}
               className="flex items-center gap-2 hover:text-brand-teal transition-colors text-left"
             >
               <Mail className="h-4.5 w-4.5 text-brand-teal shrink-0" />
-              <span>hello@acquireopd.com</span>
+              <span>acquireopd@gmail.com</span>
             </a>
           </div>
         </div>

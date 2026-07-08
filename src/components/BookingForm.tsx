@@ -115,6 +115,7 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     
     // Explicit validation check
     if (
@@ -145,7 +146,14 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
       });
 
       if (!response.ok) {
-        throw new Error("Server encountered an issue during submission.");
+        let errMsg = "Server encountered an issue during submission.";
+        try {
+          const errData = await response.json();
+          if (errData && errData.error) {
+            errMsg = errData.error;
+          }
+        } catch (_) {}
+        throw new Error(errMsg);
       }
 
       const responseData = await response.json();
@@ -155,26 +163,32 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
         onLogEvent("Form Submission Successful! Growth Audit Created", "Conversion", `Submission ID ${responseData.submissionId}`);
 
         // Construct pre-filled WhatsApp message matching exact formatting requirement
-        const messageText = `*New Operational Triage & Diagnostic Booking Request*
+        const messageText = `*New Operational Triage & Diagnostic Booking*
 
 *Full Name:* ${formData.name}
 *Hospital/Clinic:* ${formData.hospitalName}
-*Designation:* ${formData.designation}
-*Phone Number:* ${formData.mobileNumber}
+*Designation:* ${formData.designation || "Not provided"}
+*Phone:* ${formData.mobileNumber}
 *Email:* ${formData.email}
 *City:* ${formData.city}
 *Specialty:* ${formData.specialty}
-*Monthly OPD:* ${formData.monthlyOPD}
+*Monthly OPD:* ${formData.monthlyOPD || "Not provided"}
 *Monthly Surgeries:* ${formData.currentMonthlyProcedures}
-*Message:* ${formData.biggestGrowthChallenge}
+*Current Challenge:* ${formData.biggestGrowthChallenge}
+*Additional Notes:* None
 
-Submitted from the website.`;
+Submitted successfully from Acquire OPD website.`;
 
         // URL encode the message
         const encodedMessage = encodeURIComponent(messageText);
-        const whatsappUrl = `https://wa.me/919844955100?text=${encodedMessage}`;
+        
+        // Detect mobile/desktop to open WhatsApp app or WhatsApp Web
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const whatsappUrl = isMobile
+          ? `https://api.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`
+          : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
 
-        // Redirect to WhatsApp
+        // Redirect only after successful database insertion
         window.location.href = whatsappUrl;
       } else {
         throw new Error(responseData.error || "Form payload parsing failed.");
