@@ -234,10 +234,60 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
     setLoading(true);
     setErrorStatus(null);
-    setSuccessStatus("Redirecting to WhatsApp...");
+    setSuccessStatus(null);
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
 
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+    if (!supabaseUrl || !supabaseKey) {
+      setErrorStatus("Supabase environment variables are missing.");
+      setLoading(false);
+      return;
+    }
+
     try {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const submissionId = `ss_${Date.now()}`;
+
+      // Save to Supabase table 'submissions'
+      const { error: insertError } = await supabase
+        .from("submissions")
+        .insert([{
+          id: submissionId,
+          name: formData.name,
+          hospital_name: formData.hospitalName,
+          designation: formData.designation,
+          specialty: formData.specialty,
+          city: formData.city,
+          mobile_number: formData.mobileNumber,
+          email: formData.email,
+          monthly_opd: formData.monthlyOPD,
+          current_monthly_procedures: formData.currentMonthlyProcedures,
+          biggest_growth_challenge: formData.biggestGrowthChallenge,
+          submitted_at: new Date().toISOString()
+        }]);
+
+      if (insertError) {
+        console.error("Direct Supabase Insert Error:", insertError);
+        console.log("error.code:", insertError.code);
+        console.log("error.message:", insertError.message);
+        console.log("error.details:", insertError.details);
+        console.log("error.hint:", insertError.hint);
+        
+        let visualError = insertError.message || "Database insert failed.";
+        if (insertError.code) visualError += ` (Code: ${insertError.code})`;
+        if (insertError.details) visualError += ` (Details: ${insertError.details})`;
+        if (insertError.hint) visualError += ` (Hint: ${insertError.hint})`;
+        
+        setErrorStatus(visualError);
+        setLoading(false);
+        return;
+      }
+
+      onLogEvent("Form Submission Successful! Lead Saved to Supabase", "Conversion", `Submission ID ${submissionId}`);
+      setSuccessStatus("Your enquiry has been submitted successfully. Redirecting you to WhatsApp...");
+
       // Construct pre-filled WhatsApp message matching exact formatting requirement
       const messageText = `🏥 *New Operational Triage & Diagnostic Booking Enquiry*
 
@@ -274,7 +324,8 @@ ${formData.biggestGrowthChallenge}
 📝 Additional Notes:
 None
 
-Submitted via the Acquire OPD website.`;
+🌐 Submitted from:
+Acquire OPD Website`;
 
       // URL encode the message properly
       const encodedMessage = encodeURIComponent(messageText);
@@ -285,13 +336,14 @@ Submitted via the Acquire OPD website.`;
         ? `https://wa.me/919844955100?text=${encodedMessage}`
         : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
 
-      // Redirect immediately to WhatsApp
-      window.location.href = whatsappUrl;
+      // Delay for 1.5 seconds to let the user read the success message in the form UI, then redirect
+      setTimeout(() => {
+        window.location.href = whatsappUrl;
+      }, 1500);
 
     } catch (error: any) {
       console.error("Full Error:", error);
       setErrorStatus(error.message || "An unexpected error occurred.");
-    } finally {
       setLoading(false);
     }
   };
