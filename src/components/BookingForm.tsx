@@ -126,6 +126,85 @@ interface BookingFormProps {
   specialty?: string;
 }
 
+// 1. Helper to detect the project framework and resolve its expected environment variable names/values
+function getFrameworkAndEnv() {
+  let framework = "Vite"; // Default
+
+  // Check if Next.js
+  const isNext = typeof window !== "undefined" && (
+    (window as any).__NEXT_DATA__ || 
+    (window as any).next || 
+    document.querySelector("#__next")
+  );
+
+  const isLovable = typeof window !== "undefined" && (
+    (window as any).Lovable || 
+    (window as any).__lovable || 
+    document.querySelector("[data-lovable-id]")
+  );
+
+  const isBolt = typeof window !== "undefined" && (
+    (window as any).Bolt || 
+    (window as any).__bolt || 
+    document.querySelector("[data-bolt-id]")
+  );
+
+  if (isNext) {
+    framework = "Next.js";
+  } else if (isLovable) {
+    framework = "Lovable";
+  } else if (isBolt) {
+    framework = "Bolt";
+  } else {
+    // Check if we are running in a Vite environment
+    try {
+      if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_SUPABASE_URL) {
+        framework = "Vite";
+      }
+    } catch (e) {}
+  }
+
+  const isViteBased = framework === "Vite" || framework === "Lovable" || framework === "Bolt";
+
+  const urlVarName = isViteBased ? "VITE_SUPABASE_URL" : "NEXT_PUBLIC_SUPABASE_URL";
+  const keyVarName = isViteBased ? "VITE_SUPABASE_ANON_KEY" : "NEXT_PUBLIC_SUPABASE_ANON_KEY";
+
+  let urlValue = "";
+  let keyValue = "";
+
+  // 1. Try reading from import.meta.env (Vite, Lovable, Bolt)
+  try {
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      urlValue = import.meta.env[urlVarName] || import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || "";
+      keyValue = import.meta.env[keyVarName] || import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    }
+  } catch (e) {}
+
+  // 2. Try reading from process.env (Next.js, CRA, Vercel system environment variables)
+  try {
+    if (typeof process !== "undefined" && process.env) {
+      urlValue = urlValue || process.env[urlVarName] || process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+      keyValue = keyValue || process.env[keyVarName] || process.env.VITE_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    }
+  } catch (e) {}
+
+  // 3. Fallback check for dynamic environment objects if any
+  try {
+    if (typeof window !== "undefined" && (window as any).process?.env) {
+      urlValue = urlValue || (window as any).process.env[urlVarName];
+      keyValue = keyValue || (window as any).process.env[keyVarName];
+    }
+  } catch (e) {}
+
+  return {
+    framework,
+    urlVarName,
+    keyVarName,
+    urlValue,
+    keyValue
+  };
+}
+
 export default function BookingForm({ onLogEvent, city, specialty }: BookingFormProps) {
   const [formData, setFormData] = useState<BookingFormInput>({
     name: "",
@@ -167,6 +246,63 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
   const [loaderProgress, setLoaderProgress] = useState(0);
   const [loaderText, setLoaderText] = useState("Securing transmission coordinates...");
+
+  // Startup verification and diagnostics
+  useEffect(() => {
+    const runStartupDiagnostics = async () => {
+      const { framework, urlVarName, keyVarName, urlValue, keyValue } = getFrameworkAndEnv();
+
+      // 5. Add debugging logs during startup
+      console.log("=== Startup Diagnostics ===");
+      console.log(`Framework detected: ${framework}`);
+      console.log(`Supabase URL loaded (${urlVarName}): ${!!urlValue}`);
+      console.log(`Supabase Key loaded (${keyVarName}): ${!!keyValue}`);
+      console.log("===========================");
+
+      // 6. If environment variables are missing, show a clear message explaining exactly which is missing
+      if (!urlValue && !keyValue) {
+        setErrorStatus(`Missing: ${urlVarName} and ${keyVarName}`);
+        return;
+      } else if (!urlValue) {
+        setErrorStatus(`Missing: ${urlVarName}`);
+        return;
+      } else if (!keyValue) {
+        setErrorStatus(`Missing: ${keyVarName}`);
+        return;
+      }
+
+      // 9. Verify the Supabase connection by making a simple test query on application startup
+      try {
+        let supabase;
+        if (framework === "Next.js") {
+          // Requirement 3 (Next.js initialization style using process.env)
+          supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+          );
+        } else {
+          // Requirement 3 (Vite initialization style using import.meta.env)
+          supabase = createClient(
+            import.meta.env.VITE_SUPABASE_URL,
+            import.meta.env.VITE_SUPABASE_ANON_KEY
+          );
+        }
+
+        const { data, error } = await supabase.from("submissions").select("id").limit(1);
+        if (error) {
+          console.error("Supabase connection check failed:", error);
+          setErrorStatus(`Supabase Error: ${error.message}`);
+        } else {
+          console.log("Supabase startup connection check successful. Found submissions:", data?.length);
+        }
+      } catch (err: any) {
+        console.error("Supabase connection check threw an exception:", err);
+        setErrorStatus(`Supabase connection error: ${err.message || err}`);
+      }
+    };
+
+    runStartupDiagnostics();
+  }, []);
 
   useEffect(() => {
     if (!loading) {
@@ -237,17 +373,38 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
     setSuccessStatus(null);
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    const { framework, urlVarName, keyVarName, urlValue, keyValue } = getFrameworkAndEnv();
 
-    if (!supabaseUrl || !supabaseKey) {
-      setErrorStatus("Supabase environment variables are missing.");
+    if (!urlValue && !keyValue) {
+      setErrorStatus(`Missing: ${urlVarName} and ${keyVarName}`);
+      setLoading(false);
+      return;
+    } else if (!urlValue) {
+      setErrorStatus(`Missing: ${urlVarName}`);
+      setLoading(false);
+      return;
+    } else if (!keyValue) {
+      setErrorStatus(`Missing: ${keyVarName}`);
       setLoading(false);
       return;
     }
 
     try {
-      const supabase = createClient(supabaseUrl, supabaseKey);
+      let supabase;
+      if (framework === "Next.js") {
+        // Requirement 3 (Next.js initialization style using process.env)
+        supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+      } else {
+        // Requirement 3 (Vite initialization style using import.meta.env)
+        supabase = createClient(
+          import.meta.env.VITE_SUPABASE_URL,
+          import.meta.env.VITE_SUPABASE_ANON_KEY
+        );
+      }
+
       const submissionId = `ss_${Date.now()}`;
 
       // Save to Supabase table 'submissions'
@@ -269,6 +426,7 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
         }]);
 
       if (insertError) {
+        // Log details as explicitly required in Step 4
         console.error("Direct Supabase Insert Error:", insertError);
         console.log("error.code:", insertError.code);
         console.log("error.message:", insertError.message);
