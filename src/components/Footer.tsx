@@ -1,5 +1,5 @@
 import React from "react";
-import { Linkedin, Mail, MessageSquare, Shield, Lock, FileText, Globe } from "lucide-react";
+import { Linkedin, Mail, Shield, Lock, FileText, Globe } from "lucide-react";
 
 interface FooterProps {
   onLogEvent: (action: string, category: string, label: string) => void;
@@ -69,7 +69,13 @@ Thank you.`;
               onClick={handleWhatappClick}
               className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors outline-none text-left"
             >
-              <MessageSquare className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-4.5 w-4.5 text-emerald-500 shrink-0"
+              >
+                <path d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.908.533 3.7 1.461 5.253L2.04 22l4.89-.1.284-.131A9.923 9.923 0 0012.004 22c5.523 0 10.004-4.48 10.004-10.004C22.008 6.48 17.527 2 12.004 2zm5.795 13.918c-.254.712-1.254 1.3-1.744 1.385-.472.083-.938.165-3.05-.668-2.695-1.06-4.43-3.805-4.562-3.985-.132-.18-1.071-1.425-1.071-2.717s.672-1.92.933-2.186c.26-.266.567-.333.756-.333h.538c.17 0 .398.004.586.417.202.443.689 1.68.747 1.796.058.117.098.253.02.408-.078.156-.117.253-.234.39-.117.137-.253.307-.361.413-.122.12-.25.25-.107.49.142.24.63 1.03 1.353 1.67.933.826 1.718 1.082 1.964 1.205.246.123.388.103.533-.064.145-.167.625-.727.791-.975.166-.248.332-.208.558-.125.226.083 1.432.676 1.678.8.246.124.41.186.47.289.06.103.06.598-.194 1.31z" />
+              </svg>
               <span>Secure WhatsApp Hotline</span>
             </button>
 
