@@ -234,106 +234,47 @@ export default function BookingForm({ onLogEvent, city, specialty }: BookingForm
 
     setLoading(true);
     setErrorStatus(null);
-    setSuccessStatus(null);
+    setSuccessStatus("Redirecting to WhatsApp...");
     onLogEvent("Form Submission Initiated", "Conversion", "Booking Strategic Intake Submit Click");
 
-    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-    console.log("Supabase URL:", !!SUPABASE_URL);
-    console.log("Supabase Key:", !!SUPABASE_ANON_KEY);
-
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      setErrorStatus("Supabase environment variables are missing.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      console.log("Executing direct client-side Supabase insert flow...");
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const submissionId = `ss_${Date.now()}`;
-
-      const { data: insertData, error: insertError } = await supabase
-        .from("submissions")
-        .insert([{
-          id: submissionId,
-          name: formData.name,
-          hospital_name: formData.hospitalName,
-          designation: formData.designation || "Not provided",
-          specialty: formData.specialty,
-          city: formData.city || "Not provided",
-          mobile_number: formData.mobileNumber || "Not provided",
-          email: formData.email,
-          monthly_opd: formData.monthlyOPD,
-          current_monthly_procedures: formData.currentMonthlyProcedures,
-          biggest_growth_challenge: formData.biggestGrowthChallenge,
-          submitted_at: new Date().toISOString()
-        }])
-        .select();
-
-      if (insertError) {
-        console.error("Direct Supabase Insert Error:", insertError);
-        console.log("error.code:", insertError.code);
-        console.log("error.message:", insertError.message);
-        console.log("error.details:", insertError.details);
-        console.log("error.hint:", insertError.hint);
-        
-        let visualError = insertError.message || "Database insert failed.";
-        if (insertError.code) visualError += ` (Code: ${insertError.code})`;
-        if (insertError.details) visualError += ` (Details: ${insertError.details})`;
-        if (insertError.hint) visualError += ` (Hint: ${insertError.hint})`;
-        
-        setErrorStatus(visualError);
-        return;
-      }
-
-      console.log("Insert Result (Direct Supabase):", insertData);
-      onLogEvent("Form Submission Successful! Direct Growth Audit Created", "Conversion", `Submission ID ${submissionId}`);
-
-      setSuccessStatus("Diagnostic Audit request submitted successfully. Redirecting to WhatsApp...");
-      
-      const proceduresNumeric = parseInt(formData.currentMonthlyProcedures, 10) || 12;
-      const clientSideAudit = getClientSideFallbackReport(formData.specialty, proceduresNumeric, formData.biggestGrowthChallenge);
-
       // Construct pre-filled WhatsApp message matching exact formatting requirement
-      const messageText = `🏥 *New Operational Triage & Diagnostic Booking*
+      const messageText = `🏥 *New Operational Triage & Diagnostic Booking Enquiry*
 
-👤 *Full Name:*
+👤 Full Name:
 ${formData.name}
 
-🏥 *Hospital / Clinic:*
+🏥 Hospital / Clinic:
 ${formData.hospitalName}
 
-💼 *Designation:*
-${formData.designation || "Not provided"}
+💼 Designation:
+${formData.designation}
 
-📱 *Phone Number:*
+📞 Phone Number:
 ${formData.mobileNumber}
 
-📧 *Email:*
+📧 Email:
 ${formData.email}
 
-📍 *City:*
+📍 City:
 ${formData.city}
 
-🩺 *Specialty:*
+🩺 Specialty:
 ${formData.specialty}
 
-📈 *Monthly OPD:*
-${formData.monthlyOPD || "Not provided"}
+📈 Monthly OPD:
+${formData.monthlyOPD}
 
-🏥 *Monthly Surgeries:*
+🏥 Monthly Surgeries:
 ${formData.currentMonthlyProcedures}
 
-⚠️ *Current Challenges:*
+⚠️ Current Challenges:
 ${formData.biggestGrowthChallenge}
 
-📝 *Additional Notes:*
+📝 Additional Notes:
 None
 
-🌐 Submitted from:
-Acquire OPD Website`;
+Submitted via the Acquire OPD website.`;
 
       // URL encode the message properly
       const encodedMessage = encodeURIComponent(messageText);
@@ -344,11 +285,8 @@ Acquire OPD Website`;
         ? `https://wa.me/919844955100?text=${encodedMessage}`
         : `https://web.whatsapp.com/send?phone=919844955100&text=${encodedMessage}`;
 
-      // Delay for 1.5 seconds to let the user read the success message in the form UI, then redirect and render report
-      setTimeout(() => {
-        setAuditResult(clientSideAudit);
-        window.location.href = whatsappUrl;
-      }, 1500);
+      // Redirect immediately to WhatsApp
+      window.location.href = whatsappUrl;
 
     } catch (error: any) {
       console.error("Full Error:", error);
