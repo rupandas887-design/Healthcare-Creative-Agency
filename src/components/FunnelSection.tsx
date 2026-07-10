@@ -333,7 +333,7 @@ export default function FunnelSection({ onLogEvent }: FunnelSectionProps) {
               {/* Launcher/Branding logo */}
               <div className="flex items-center gap-3 border-b border-cyan-500/10 pb-5">
                 <img 
-                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Untitled_design__3_-removebg-preview.png" 
                   alt="Acquire OPD Logo" 
                   className="h-10 w-10 object-contain block opacity-100" 
                   style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}

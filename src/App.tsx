@@ -188,7 +188,7 @@ Thank you.`;
               {/* Strategic Logo Badge */}
               <div className="flex flex-col sm:flex-row items-center gap-6 border-b border-white/10 pb-6">
                 <img 
-                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Untitled_design__3_-removebg-preview.png" 
                   alt="Acquire OPD Logo" 
                   className="h-[120px] md:h-[140px] w-auto object-contain block opacity-100 animate-pulse" 
                   style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}
@@ -251,15 +251,31 @@ Thank you.`;
         >
           {/* Stunning S-Wave Custom Logo like the image */}
           <img 
-            src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+            src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Untitled_design__3_-removebg-preview.png" 
             alt="Acquire OPD Logo" 
             className="h-[52px] md:h-[62px] lg:h-[75px] w-auto object-contain block opacity-100" 
             style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)', objectPosition: 'center' }}
             referrerPolicy="no-referrer" 
           />
-          <span className="font-bold text-[20px] md:text-[24px] text-[#0EA5E9] tracking-tight group-hover:text-[#38BDF8] transition-colors font-display leading-none">
+          <motion.span 
+            className="font-bold text-[20px] md:text-[24px] tracking-tight font-display leading-none text-transparent bg-clip-text"
+            style={{
+              backgroundImage: "linear-gradient(to right, #0EA5E9, #38BDF8, #60A5FA, #22D3EE, #60A5FA, #38BDF8, #0EA5E9)",
+              backgroundSize: "200% auto",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
+            }}
+            animate={{
+              backgroundPosition: ["0% center", "-200% center"],
+            }}
+            transition={{
+              duration: 3,
+              ease: "linear",
+              repeat: Infinity,
+            }}
+          >
             Acquire OPD
-          </span>
+          </motion.span>
         </div>
 
         {/* Links Navigation matching the screenshot perfectly */}
@@ -348,7 +364,7 @@ Thank you.`;
               {/* Premium Mobile Menu Brand Header */}
               <div className="flex items-center gap-4 mb-3">
                 <img 
-                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                  src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Untitled_design__3_-removebg-preview.png" 
                   alt="Acquire OPD Logo" 
                   className="h-[52px] w-auto object-contain block opacity-100" 
                   style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}

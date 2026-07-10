@@ -50,7 +50,7 @@ export default function AboutSection() {
                 <div className="flex items-center gap-4">
                   <div className="h-16 w-16 rounded-full bg-brand-navy border-2 border-white/20 shadow-md flex items-center justify-center overflow-hidden p-1.5 group-hover:scale-105 transition-transform duration-300">
                     <img 
-                      src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Gemini_Generated_Image_r4scr8r4scr8r4sc-removebg-preview%20(2).png" 
+                      src="https://kgibprahnkpifyzjfzsf.supabase.co/storage/v1/object/public/img/Untitled_design__3_-removebg-preview.png" 
                       alt="Acquire OPD Logo" 
                       className="w-full h-full object-contain block opacity-100" 
                       style={{ imageRendering: 'auto', filter: 'brightness(1.18) contrast(1.12) saturate(1.08)' }}
