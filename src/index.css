@@ -1,119 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", var(--font-sans);
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
   
-  --color-brand-navy: #071B34;
-  --color-brand-teal: #14B8A6;
-  --color-brand-coral: #F05A4F;
-  --color-brand-gold: #D4AF37;
-  --color-brand-gray: #051325;
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+  
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
 }
 
-/* Base custom styles */
 body {
-  font-family: var(--font-sans);
-  background-color: var(--color-brand-navy);
-  color: #f8fafc;
-  scroll-behavior: smooth;
-  overflow-x: hidden;
+  @apply bg-slate-50 text-slate-900 antialiased selection:bg-primary-500 selection:text-white overflow-x-hidden;
 }
 
-/* Typography styles */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
+.glass-card {
+  @apply bg-white rounded-3xl shadow-2xl border border-slate-200;
 }
 
-/* Fluid Typography with clamp() for cross-device consistency */
-.text-fluid-h1 {
-  font-size: clamp(2rem, 5vw + 0.75rem, 4rem) !important;
-  line-height: 1.15 !important;
+.text-gradient {
+  @apply text-primary-700;
 }
-.text-fluid-h2 {
-  font-size: clamp(1.6rem, 3vw + 0.6rem, 2.6rem) !important;
-  line-height: 1.2 !important;
-}
-.text-fluid-h3 {
-  font-size: clamp(1.2rem, 2vw + 0.5rem, 1.8rem) !important;
-  line-height: 1.25 !important;
-}
-
-.mono-metric {
-  font-family: var(--font-mono);
-}
-
-/* Custom scroll bar for dark dashboards */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(7, 27, 52, 0.5);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(20, 184, 166, 0.25);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 184, 166, 0.45);
-}
-
-/* Animation utilities */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes flowMapEnergy {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-flow-map-energy {
-  animation: flowMapEnergy 4s ease infinite;
-}
-
-/* Cyber Glow Utilities */
-.glow-teal {
-  box-shadow: 0 0 15px rgba(20, 184, 166, 0.25);
-  border-color: rgba(20, 184, 166, 0.45);
-}
-
-.glow-orange {
-  box-shadow: 0 0 15px rgba(240, 90, 79, 0.25);
-  border-color: rgba(240, 90, 79, 0.45);
-}
-
-.glow-gold {
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
-  border-color: rgba(212, 175, 55, 0.45);
-}
-
-/* Perspective Grid Floor Animation */
-@keyframes gridMove {
-  0% {
-    transform: perspective(1000px) rotateX(60deg) translateY(0);
-  }
-  100% {
-    transform: perspective(1000px) rotateX(60deg) translateY(40px);
-  }
-}
-
-.perspective-grid {
-  background-image: 
-    linear-gradient(rgba(20, 184, 166, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 184, 166, 0.12) 1px, transparent 1px);
-  background-size: 50px 50px;
-  background-position: center;
-  transform-origin: top center;
-  animation: gridMove 20s linear infinite;
-}
-

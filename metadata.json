@@ -1,6 +1,8 @@
 {
   "name": "Acquire OPD",
-  "description": "Strategic Healthcare Growth Specialist for Surgeon-Owned Hospitals",
+  "description": "Hospital Growth Consultancy Website",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

@@ -1,52 +1,42 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
+import { useInView } from 'motion/react';
 
 interface AnimatedCounterProps {
   value: number;
-  duration?: number; // duration in milliseconds
-  formatter?: (val: number) => string;
-  className?: string;
+  duration?: number;
+  suffix?: string;
+  prefix?: string;
 }
 
-export default function AnimatedCounter({
-  value,
-  duration = 805,
-  formatter = (val) => Math.round(val).toString(),
-  className = "",
-}: AnimatedCounterProps) {
-  const [displayValue, setDisplayValue] = useState(0);
+export default function AnimatedCounter({ value, duration = 2, suffix = '', prefix = '' }: AnimatedCounterProps) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   useEffect(() => {
-    let startTimestamp: number | null = null;
-    const startValue = displayValue;
-    const endValue = value;
-
-    if (startValue === endValue) return;
-
-    let animationFrameId: number;
-
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    if (isInView) {
+      let start = 0;
+      const increment = value / (duration * 60); // Assuming 60fps
       
-      // Quartic out easing function for an executive, ultra-premium feel
-      const easeProgress = 1 - Math.pow(1 - progress, 4);
-      const currentVal = startValue + (endValue - startValue) * easeProgress;
+      const updateCounter = () => {
+        start += increment;
+        if (start < value) {
+          setCount(Math.ceil(start));
+          requestAnimationFrame(updateCounter);
+        } else {
+          setCount(value);
+        }
+      };
       
-      setDisplayValue(currentVal);
+      updateCounter();
+    }
+  }, [isInView, value, duration]);
 
-      if (progress < 1) {
-        animationFrameId = requestAnimationFrame(step);
-      } else {
-        setDisplayValue(endValue);
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(step);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [value, duration]);
-
-  return <span className={className}>{formatter(displayValue)}</span>;
+  return (
+    <span ref={ref} className="tabular-nums">
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
 }
