@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { TrendingUp, Users, Activity, BarChart3, ArrowUpRight } from 'lucide-react';
 import AnimatedCounter from '../components/AnimatedCounter';
@@ -8,6 +9,10 @@ const fadeInUp = {
 };
 
 export default function Results() {
+  useEffect(() => {
+    document.title = "Results | Acquire OPD";
+  }, []);
+
   return (
     <div className="pt-20 bg-slate-50 min-h-screen">
       {/* Header */}

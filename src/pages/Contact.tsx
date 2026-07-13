@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 
 const fadeInUp = {
@@ -9,6 +9,10 @@ const fadeInUp = {
 };
 
 export default function Contact() {
+  useEffect(() => {
+    document.title = "Contact | Acquire OPD";
+  }, []);
+
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 

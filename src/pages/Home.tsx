@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'motion/react';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Users, Activity, BarChart3, Stethoscope, 
@@ -163,6 +163,10 @@ const staggerContainer = {
 };
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "Acquire OPD | Operational Healthcare Strategists";
+  }, []);
+
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
 

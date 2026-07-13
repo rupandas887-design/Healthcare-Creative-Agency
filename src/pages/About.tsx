@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Target, Lightbulb, TrendingUp, Shield, Users, Award, CheckCircle2, Building2 } from 'lucide-react';
 import AnimatedCounter from '../components/AnimatedCounter';
@@ -8,6 +9,10 @@ const fadeInUp = {
 };
 
 export default function About() {
+  useEffect(() => {
+    document.title = "About | Acquire OPD";
+  }, []);
+
   return (
     <div className="pt-20 bg-slate-50 min-h-screen">
       {/* Hero Section */}
