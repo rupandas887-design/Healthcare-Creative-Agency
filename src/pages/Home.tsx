@@ -321,10 +321,9 @@ export default function Home() {
             transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
             className="flex gap-16 items-center px-8"
           >
-            {/* Generating fake hospital names for demo */}
             {[...Array(2)].map((_, j) => (
               <div key={j} className="flex gap-16 items-center">
-                {['Apollo Med', 'CareMax', 'City Hospital', 'Metro Health', 'Sunrise Clinics', 'Apex Medical', 'Vitality'].map((name, i) => (
+                {['Lux Hospitals', 'Himas Hospital', 'Hip & Knee Clinic', 'Gutcare Clinics', 'Sri Srinivasa Clinic'].map((name, i) => (
                   <div key={i} className="flex items-center gap-2 text-2xl font-display font-bold text-slate-400">
                     <Building2 size={28} />
                     {name}

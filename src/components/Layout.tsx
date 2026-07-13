@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Activity, MessageCircle, ChevronRight, Phone, Mail, MapPin } from 'lucide-react';
+import { Menu, X, Activity, MessageCircle, ChevronRight, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -139,15 +139,27 @@ export default function Layout() {
                 </span>
               </Link>
               <p className="text-slate-400 leading-relaxed max-w-sm">
-                Transforming hospitals into high-performing healthcare brands with measurable business results.
+                Transforming surgeon-owned hospitals into high-performing healthcare brands with measurable business results.
               </p>
               <div className="flex gap-4">
-                {['LinkedIn', 'Facebook', 'Instagram', 'YouTube'].map((social) => (
-                  <a key={social} href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all">
-                    <span className="sr-only">{social}</span>
-                    <div className="w-4 h-4 bg-current opacity-70" /> {/* Placeholder for icon */}
-                  </a>
-                ))}
+                {[
+                  { name: 'Facebook', icon: Facebook },
+                  { name: 'Instagram', icon: Instagram },
+                  { name: 'LinkedIn', icon: Linkedin },
+                  { name: 'YouTube', icon: Youtube },
+                ].map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <div 
+                      key={social.name} 
+                      className="w-10 h-10 rounded-xl bg-slate-800/80 text-slate-400 flex items-center justify-center hover:scale-105 hover:bg-slate-800 hover:text-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-slate-700/30 transition-all duration-300 cursor-default"
+                      title={`${social.name} (Coming Soon)`}
+                    >
+                      <span className="sr-only">{social.name}</span>
+                      <Icon size={18} className="opacity-80 hover:opacity-100 transition-opacity" />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -186,8 +198,16 @@ export default function Layout() {
               <h3 className="text-white font-display font-semibold text-lg mb-6">Contact Us</h3>
               <ul className="space-y-4">
                 <li className="flex gap-3">
-                  <MapPin size={20} className="text-primary-500 shrink-0" />
-                  <span className="text-slate-400">123 Healthcare Avenue, Growth City, India</span>
+                  <MapPin size={20} className="text-primary-500 shrink-0 mt-1" />
+                  <span className="text-slate-400 leading-relaxed">
+                    Acquire OPD <br />
+                    1704, 17th Cross Rd, <br />
+                    Govindaraja Nagar Ward, <br />
+                    MC Layout, <br />
+                    Vijayanagar, <br />
+                    Bengaluru, <br />
+                    Karnataka 560040
+                  </span>
                 </li>
                 <li className="flex gap-3">
                   <Phone size={20} className="text-primary-500 shrink-0" />
