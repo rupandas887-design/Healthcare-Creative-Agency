@@ -24,15 +24,23 @@ export default function Contact() {
     setFormState('submitting');
     setErrorMsg(null);
 
-    const formData = new FormData(e.currentTarget);
+    const formElement = e.currentTarget;
+    const formData = new FormData(formElement);
     const data = {
-      name: formData.get('name') as string,
-      hospital: formData.get('hospital') as string,
-      mobile: formData.get('mobile') as string,
-      email: formData.get('email') as string,
-      city: formData.get('city') as string,
-      message: formData.get('message') as string,
+      name: (formData.get('name') as string || '').trim(),
+      hospital: (formData.get('hospital') as string || '').trim(),
+      mobile: (formData.get('mobile') as string || '').trim(),
+      email: (formData.get('email') as string || '').trim(),
+      city: (formData.get('city') as string || '').trim(),
+      message: (formData.get('message') as string || '').trim(),
     };
+
+    // Client-side validation
+    if (!data.name || !data.hospital || !data.mobile || !data.email || !data.city) {
+      setErrorMsg('Please fill out all required fields.');
+      setFormState('idle');
+      return;
+    }
 
     // 1. Fetch user IP
     let userIp = 'Unknown';
@@ -63,9 +71,9 @@ export default function Contact() {
     let finalError: any = null;
 
     if (isSupabaseConfigured && supabase) {
-      // Robust multi-schema-supporting cascade insert logic
+      // Robust multi-schema-supporting cascade insert logic to handle possible schemas automatically
       const attempts = [
-        // Attempt 1: All columns lower_snake_case (most typical Supabase schema)
+        // Attempt 1: All columns lower_snake_case (matching public.submissions schema precisely)
         async () => {
           const { error } = await supabase.from('submissions').insert([{
             ...baseData,
@@ -126,18 +134,22 @@ export default function Contact() {
       }
 
       if (!savedSuccessfully) {
-        console.error('All Supabase insert attempts failed. Final error:', finalError);
-        setErrorMsg(finalError?.message || 'Failed to submit form to Supabase. Please verify database table structure and connection.');
+        console.error('All Supabase insert attempts failed. Final error details logged:', finalError);
+        setErrorMsg(finalError?.message || finalError?.details || 'Failed to insert submission into Supabase. Please ensure your Supabase database table submissions is set up with public permissions.');
         setFormState('idle');
         return;
       }
     } else {
-      // Simulated local fallback when Supabase is not configured yet
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      savedSuccessfully = true;
+      // Supabase is not configured yet, prevent silent failure and warn clearly
+      console.error('Supabase is not configured. Missing VITE_SUPABASE_URL and/or VITE_SUPABASE_ANON_KEY environment variables.');
+      setErrorMsg('Database configuration is missing. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment variables in the Settings panel.');
+      setFormState('idle');
+      return;
     }
 
     if (savedSuccessfully) {
+      // Clear/reset all form fields upon successful database insertion
+      formElement.reset();
       setFormState('success');
 
       // Construct dynamic pre-filled WhatsApp link with actual values
@@ -156,7 +168,7 @@ Here are my details:
 📝 Requirement:
 ${data.message || 'None'}
 
-Please contact me regarding my free hospital hospital growth audit.
+Please contact me regarding my free hospital growth audit.
 
 Thank you.`;
 
@@ -315,16 +327,16 @@ Thank you.`;
                 
                 {formState === 'success' ? (
                   <div className="bg-emerald-50 text-emerald-800 p-6 rounded-2xl border border-emerald-100 text-center">
-                    <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                       <Send size={32} />
                     </div>
-                    <h4 className="text-xl font-bold mb-2">Request Received!</h4>
+                    <h4 className="text-xl font-bold mb-2">Thank you! Your request has been submitted successfully.</h4>
                     <p className="text-emerald-700">
-                      Thank you for reaching out. One of our hospital growth experts will contact you shortly to schedule your free consultation.
+                      Your form has been securely recorded. We are redirecting you to WhatsApp shortly to confirm your booking and details...
                     </p>
                     <button 
                       onClick={() => setFormState('idle')}
-                      className="mt-6 text-emerald-600 font-medium hover:text-emerald-700"
+                      className="mt-6 text-emerald-600 font-semibold hover:text-emerald-700 underline text-sm block mx-auto"
                     >
                       Submit another request
                     </button>
