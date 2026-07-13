@@ -33,7 +33,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-display font-extrabold mb-6 leading-tight drop-shadow-lg"
           >
-            Transforming Hospitals into <br className="hidden md:block" />
+            Transforming Surgeon-Owned Hospitals into <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary-400">High-Performing</span> Brands
           </motion.h1>
           <motion.p 
@@ -61,10 +61,10 @@ export default function About() {
               <h3 className="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-6">Why Acquire OPD Exists</h3>
               <div className="space-y-4 text-lg text-slate-600 leading-relaxed">
                 <p>
-                  The healthcare industry is evolving rapidly, but many excellent hospitals struggle with patient acquisition and sustainable growth. They don't need another external service provider or fragmented marketing efforts.
+                  The healthcare industry is evolving rapidly, but many excellent surgeon-owned hospitals struggle with patient acquisition and sustainable growth. They don't need another external service provider or fragmented marketing efforts.
                 </p>
                 <p>
-                  Acquire OPD was founded to become a true growth partner for hospital leadership. We begin by understanding how the hospital operates, identifying bottlenecks, and then designing systems that improve the entire ecosystem—from operations to patient experience and revenue.
+                  Acquire OPD was founded to become a true growth partner for hospital leadership. We begin by understanding how your hospital operates, identifying bottlenecks, and then designing systems that improve the entire ecosystem—from operations to patient experience and revenue.
                 </p>
               </div>
             </motion.div>
@@ -81,7 +81,7 @@ export default function About() {
                 </div>
                 <h4 className="text-2xl font-bold text-slate-900 mb-3">Our Mission</h4>
                 <p className="text-slate-600 leading-relaxed">
-                  To transform hospitals into high-performing organizations by improving every stage of the patient journey, strengthening internal systems, increasing OPD, improving surgery conversion, and driving long-term revenue growth.
+                  To transform surgeon-owned hospitals into high-performing organizations by improving every stage of the patient journey, strengthening internal systems, increasing OPD, improving surgery conversion, and driving long-term revenue growth.
                 </p>
               </motion.div>
               
@@ -97,7 +97,7 @@ export default function About() {
                 </div>
                 <h4 className="text-2xl font-bold text-slate-900 mb-3">Our Vision</h4>
                 <p className="text-slate-600 leading-relaxed">
-                  To help hospitals become smarter, more efficient, and more sustainable healthcare organizations through operational excellence, digital transformation, and strategic growth.
+                  To help surgeon-owned hospitals become smarter, more efficient, and more sustainable healthcare organizations through operational excellence, digital transformation, and strategic growth.
                 </p>
               </motion.div>
             </div>
