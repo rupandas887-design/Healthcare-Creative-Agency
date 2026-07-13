@@ -51,7 +51,7 @@ export default function Results() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: Users, label: 'Patients Reached', value: 500, suffix: 'K+', color: 'text-primary-600', bg: 'bg-primary-50' },
-              { icon: Activity, label: 'Hospitals Consulted', value: 100, suffix: '+', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+              { icon: Activity, label: 'Hospitals Consulted', value: 5, suffix: '', color: 'text-emerald-600', bg: 'bg-emerald-50' },
               { icon: TrendingUp, label: 'Average OPD Growth', value: 200, suffix: '%', color: 'text-blue-600', bg: 'bg-blue-50' },
               { icon: BarChart3, label: 'Surgery Growth', value: 150, suffix: '%', color: 'text-indigo-600', bg: 'bg-indigo-50' }
             ].map((stat, i) => (
