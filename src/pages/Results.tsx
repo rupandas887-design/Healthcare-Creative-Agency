@@ -181,51 +181,106 @@ export default function Results() {
       </section>
 
       {/* Dashboard Preview section */}
-      <section className="py-20 lg:py-32 bg-slate-900 text-white overflow-hidden relative">
+      <section className="py-20 lg:py-32 bg-slate-50 border-t border-slate-100 overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-display font-bold mb-10">Data-Driven Hospital Management</h2>
-          <p className="text-xl text-slate-400 mb-16 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-display font-bold mb-6 text-slate-900">Data-Driven Hospital Management</h2>
+          <p className="text-lg sm:text-xl text-slate-600 mb-16 max-w-2xl mx-auto leading-relaxed">
             We implement custom dashboards to track your leads, conversions, and revenue in real-time. No more guessing.
           </p>
 
           <div className="relative max-w-5xl mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10"></div>
             <motion.div 
               initial={{ y: 50, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true }}
-              className="glass-card bg-white/5 border-white/10 rounded-t-3xl p-4 md:p-8 backdrop-blur-xl"
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-10 shadow-2xl shadow-slate-200/60"
             >
+               {/* Illustrative Dashboard Header with real SaaS feel */}
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-8 mb-8 border-b border-slate-100">
+                 <div className="text-left">
+                   <div className="flex items-center gap-2 mb-1.5">
+                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                     <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Live Performance Engine</span>
+                   </div>
+                   <h3 className="text-xl font-bold text-slate-900">Hospital Analytics Overview</h3>
+                 </div>
+                 <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/60 p-1.5 rounded-xl text-xs font-semibold text-slate-600 shadow-sm">
+                   <span className="px-3 py-1.5 bg-white rounded-lg shadow-sm text-slate-900">Real-time</span>
+                   <span className="px-3 py-1.5">Last 30 days</span>
+                 </div>
+               </div>
+
                {/* Illustrative Dashboard UI */}
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                  {[
-                   { label: 'Total Revenue Generated', value: '₹4.2Cr', trend: '+15.2%' },
-                   { label: 'Patient Footfall', value: '3,450', trend: '+22.4%' },
-                   { label: 'Campaign ROI', value: '420%', trend: '+5.1%' },
+                   { label: 'Total Revenue Generated', value: '₹4.2Cr', trend: '+15.2%', color: 'text-primary-600', bg: 'bg-primary-50/60' },
+                   { label: 'Patient Footfall', value: '3,450', trend: '+22.4%', color: 'text-emerald-600', bg: 'bg-emerald-50/60' },
+                   { label: 'Campaign ROI', value: '420%', trend: '+5.1%', color: 'text-indigo-600', bg: 'bg-indigo-50/60' },
                  ].map((stat, i) => (
-                   <div key={i} className="bg-slate-800/50 rounded-xl p-6 border border-white/5 text-left">
-                     <p className="text-slate-400 text-sm mb-2">{stat.label}</p>
+                   <div 
+                     key={i} 
+                     className="bg-white rounded-2xl p-6 border border-slate-200/70 text-left transition-all duration-300 hover:shadow-lg hover:border-slate-300 hover:-translate-y-1 shadow-sm group cursor-default"
+                   >
+                     <p className="text-slate-500 text-xs sm:text-sm font-medium mb-3 uppercase tracking-wider">{stat.label}</p>
                      <div className="flex items-end justify-between">
-                       <p className="text-3xl font-display font-bold text-white">{stat.value}</p>
-                       <span className="text-emerald-400 text-sm font-bold flex items-center"><ArrowUpRight size={14}/> {stat.trend}</span>
+                       <p className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 tracking-tight group-hover:text-primary-600 transition-colors">{stat.value}</p>
+                       <span className={`text-emerald-700 text-xs font-extrabold flex items-center gap-0.5 px-2 py-1 rounded-lg border border-emerald-100 bg-emerald-50 shadow-sm`}>
+                         <ArrowUpRight size={14} className="stroke-[3]" /> {stat.trend}
+                       </span>
                      </div>
                    </div>
                  ))}
                </div>
-               <div className="h-64 bg-slate-800/50 rounded-xl border border-white/5 p-6 flex flex-col justify-end gap-2 relative overflow-hidden">
-                  <div className="absolute top-6 left-6 text-slate-400 font-medium">Monthly Revenue Growth</div>
-                  
-                  {/* Animated grid background */}
-                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02]"></div>
 
-                  <div className="flex items-end gap-2 w-full h-40 relative z-10">
-                    {[30, 45, 40, 60, 55, 75, 70, 85, 80, 100].map((h, i) => (
-                      <motion.div 
-                        key={i}
-                        animate={{ height: [`${Math.max(10, h - 15)}%`, `${h}%`, `${Math.max(10, h - 15)}%`] }}
-                        transition={{ duration: 4, repeat: Infinity, delay: i * 0.1, ease: "easeInOut" }}
-                        className={`flex-1 rounded-t-sm opacity-80 ${i === 9 ? 'bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'bg-gradient-to-t from-primary-600 to-primary-400'}`}
-                      />
+               {/* Chart Component with Crisp Elements */}
+               <div className="bg-white rounded-2xl border border-slate-200/70 p-6 md:p-8 shadow-sm flex flex-col justify-between gap-6 relative overflow-hidden">
+                  <div className="flex justify-between items-center z-10">
+                    <div className="text-left">
+                      <div className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Performance Chart</div>
+                      <div className="text-slate-900 font-display font-bold text-lg">Monthly Revenue Growth</div>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs font-semibold text-slate-500">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded bg-primary-600"></span>
+                        <span>OPD Revenue</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded bg-emerald-500"></span>
+                        <span>Surgery Revenue</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Grid Lines behind the Chart */}
+                  <div className="absolute inset-x-8 top-28 bottom-16 flex flex-col justify-between pointer-events-none opacity-40">
+                    {[1, 2, 3, 4].map((n) => (
+                      <div key={n} className="w-full border-t border-dashed border-slate-200 flex justify-between items-center">
+                        <span className="text-[10px] font-mono text-slate-400 -mt-3 tracking-wider bg-white pr-2">
+                          {n === 4 && '₹50L'}
+                          {n === 3 && '₹35L'}
+                          {n === 2 && '₹20L'}
+                          {n === 1 && '₹5L'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-end gap-2 sm:gap-3 w-full h-48 relative z-10 mt-6 px-4">
+                    {[35, 50, 42, 65, 58, 80, 72, 90, 85, 100].map((h, i) => (
+                      <div key={i} className="flex-1 flex flex-col items-center h-full justify-end">
+                        <motion.div 
+                          animate={{ height: [`${Math.max(15, h - 12)}%`, `${h}%`, `${Math.max(15, h - 12)}%`] }}
+                          transition={{ duration: 4, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }}
+                          className={`w-full rounded-t-md transition-all duration-300 hover:brightness-105 cursor-pointer ${
+                            i === 9 
+                              ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]' 
+                              : 'bg-gradient-to-t from-primary-600 to-primary-500 shadow-[0_0_15px_rgba(37,99,235,0.15)]'
+                          }`}
+                        />
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-400 mt-3 tracking-tight">
+                          {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'][i]}
+                        </span>
+                      </div>
                     ))}
                   </div>
                </div>
