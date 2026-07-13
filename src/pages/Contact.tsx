@@ -304,15 +304,6 @@ Thank you.`;
               <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-6">
                   <h3 className="text-2xl font-display font-bold text-slate-900">Request a Free Audit</h3>
-                  {isSupabaseConfigured ? (
-                    <span className="self-start text-xs font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-100">
-                      ● Supabase Active
-                    </span>
-                  ) : (
-                    <span className="self-start text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200">
-                      Demo Mode (Simulated)
-                    </span>
-                  )}
                 </div>
 
                 {errorMsg && (
