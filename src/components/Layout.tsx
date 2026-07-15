@@ -226,8 +226,8 @@ export default function Layout() {
               &copy; {new Date().getFullYear()} Acquire OPD. All Rights Reserved.
             </p>
             <div className="mt-4 md:mt-0 flex justify-center gap-6 text-sm text-slate-500">
-              <a href="#" className="hover:text-slate-300">Privacy Policy</a>
-              <a href="#" className="hover:text-slate-300">Terms of Service</a>
+              <Link to="/privacy-policy" className="hover:text-slate-300">Privacy Policy</Link>
+              <Link to="/terms-conditions" className="hover:text-slate-300">Terms & Conditions</Link>
             </div>
           </div>
         </div>
