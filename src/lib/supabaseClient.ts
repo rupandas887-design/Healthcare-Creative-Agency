@@ -1,8 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get environment variables or fall back to default project credentials
-const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://kgibprahnkpifyzjfzsf.supabase.co';
-const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaWJwcmFobmtwaWZ5empmenNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Njg1NzIsImV4cCI6MjA5OTA0NDU3Mn0.02TizBxJL7CVjcwFPREG3re583u_DdksVDQ65o8-mko';
+const getEnv = (key: string): string => {
+  const env = (import.meta as any).env || {};
+  return env[key] || '';
+};
+
+const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL') || 'https://kgibprahnkpifyzjfzsf.supabase.co';
+const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaWJwcmFobmtwaWZ5empmenNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Njg1NzIsImV4cCI6MjA5OTA0NDU3Mn0.02TizBxJL7CVjcwFPREG3re583u_DdksVDQ65o8-mko';
 
 // Helper to check if Supabase is properly configured (with env variables or fallback)
 export const isSupabaseConfigured = !!supabaseUrl && !!supabaseAnonKey;

@@ -6,6 +6,7 @@ import Results from './pages/Results';
 import Contact from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsConditions from './pages/TermsConditions';
+import Assessment from './pages/Assessment';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="about" element={<About />} />
         <Route path="results" element={<Results />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="assessment" element={<Assessment />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="terms-conditions" element={<TermsConditions />} />
       </Route>

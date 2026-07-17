@@ -7,6 +7,7 @@ const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Results', path: '/results' },
+  { name: 'Partnership Quiz', path: '/assessment' },
   { name: 'Contact', path: '/contact' },
 ];
 
