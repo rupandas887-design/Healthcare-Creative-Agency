@@ -519,65 +519,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Partnership Readiness Assessment Section */}
-      <section className="py-24 bg-white relative overflow-hidden border-t border-slate-100">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-          <motion.div 
-            animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.25, 0.15] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-primary-100 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" 
-          />
-        </div>
+      {/* Partnership Readiness Assessment Section (Hidden from UI as requested) */}
+      {false && (
+        <section className="py-24 bg-white relative overflow-hidden border-t border-slate-100">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+            <motion.div 
+              animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.25, 0.15] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-primary-100 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" 
+            />
+          </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="bg-slate-900 text-white rounded-3xl p-8 md:p-12 border border-slate-800 shadow-2xl overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-primary-500/10 rounded-full blur-[60px] pointer-events-none" />
-            
-            <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-8 space-y-6">
-                <span className="inline-flex items-center gap-1.5 text-emerald-400 font-semibold text-xs tracking-wider uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                  <ShieldCheck size={12} />
-                  Partnership Compatibility Index
-                </span>
-                <h3 className="text-3xl md:text-4xl font-display font-bold leading-tight">
-                  Take the Partnership Readiness Assessment (APRA)
-                </h3>
-                <p className="text-slate-400 text-sm md:text-base leading-relaxed">
-                  Before we prescribe any strategic roadmap, we diagnose your current clinical setup. Audit your surgical volumes, growth mindset, operational metrics, and exclusive geography eligibility in 3 minutes.
-                </p>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-emerald-400" />
-                    <span className="text-xs text-slate-300 font-medium">100-Point Score Rating</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-emerald-400" />
-                    <span className="text-xs text-slate-300 font-medium">Prescriptive Roadmaps</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-emerald-400" />
-                    <span className="text-xs text-slate-300 font-medium">Exclusivity Eligibility</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-emerald-400" />
-                    <span className="text-xs text-slate-300 font-medium">Free Clinical Audit Consultation</span>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="bg-slate-900 text-white rounded-3xl p-8 md:p-12 border border-slate-800 shadow-2xl overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-primary-500/10 rounded-full blur-[60px] pointer-events-none" />
+              
+              <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-8 space-y-6">
+                  <span className="inline-flex items-center gap-1.5 text-emerald-400 font-semibold text-xs tracking-wider uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                    <ShieldCheck size={12} />
+                    Partnership Compatibility Index
+                  </span>
+                  <h3 className="text-3xl md:text-4xl font-display font-bold leading-tight">
+                    Take the Partnership Readiness Assessment (APRA)
+                  </h3>
+                  <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+                    Before we prescribe any strategic roadmap, we diagnose your current clinical setup. Audit your surgical volumes, growth mindset, operational metrics, and exclusive geography eligibility in 3 minutes.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 pt-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400" />
+                      <span className="text-xs text-slate-300 font-medium">100-Point Score Rating</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400" />
+                      <span className="text-xs text-slate-300 font-medium">Prescriptive Roadmaps</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400" />
+                      <span className="text-xs text-slate-300 font-medium">Exclusivity Eligibility</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400" />
+                      <span className="text-xs text-slate-300 font-medium">Free Clinical Audit Consultation</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="lg:col-span-4 flex justify-center">
-                <Link 
-                  to="/assessment" 
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-4 px-8 rounded-2xl transition-all shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 cursor-pointer text-base"
-                >
-                  Start Assessment Quiz
-                  <ArrowRight size={18} />
-                </Link>
+                <div className="lg:col-span-4 flex justify-center">
+                  <Link 
+                    to="/assessment" 
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-4 px-8 rounded-2xl transition-all shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 cursor-pointer text-base"
+                  >
+                    Start Assessment Quiz
+                    <ArrowRight size={18} />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-24 bg-slate-900 text-white relative overflow-hidden">

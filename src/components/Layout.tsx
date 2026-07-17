@@ -7,7 +7,6 @@ const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Results', path: '/results' },
-  { name: 'Partnership Quiz', path: '/assessment' },
   { name: 'Contact', path: '/contact' },
 ];
 
@@ -84,20 +83,6 @@ export default function Layout() {
 
             {/* Right side controls (Admin Button & Mobile Menu Toggle) */}
             <div className="flex items-center gap-4">
-              <Link
-                to={isAdminLoggedIn ? "/admin" : "/admin/login"}
-                id="header-admin-login-btn"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-5 sm:py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-primary-700 hover:border-primary-500 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
-              >
-                <Lock size={14} className="text-slate-400 group-hover:text-primary-600 transition-colors shrink-0" />
-                <span className="hidden sm:inline">
-                  {isAdminLoggedIn ? 'Admin Dashboard' : 'Admin Login'}
-                </span>
-                <span className="sm:hidden">
-                  {isAdminLoggedIn ? 'Admin' : 'Login'}
-                </span>
-              </Link>
-
               {/* Mobile Menu Button */}
               <button
                 id="header-mobile-menu-btn"
