@@ -34,7 +34,7 @@ import {
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 
 // Core APRA Questionnaire Configuration
-const sections = [
+export const sections = [
   {
     id: 'A',
     title: 'Practice Profile',
@@ -234,7 +234,7 @@ const allQuestions = sections.flatMap(sec =>
 );
 
 // Mandatory Knockout Validation Configuration
-const knockouts = [
+export const knockouts = [
   {
     id: 'ko1',
     text: 'Are you willing to invest consistently in practice growth rather than expecting immediate results?',
@@ -636,6 +636,8 @@ export default function Assessment() {
       score: total,
       answers: answers,
       knockouts: koAnswers,
+      status: 'Pending Review',
+      review_notes: '',
       user_ip: userIp,
       user_agent: userAgent,
       created_at: createdAt

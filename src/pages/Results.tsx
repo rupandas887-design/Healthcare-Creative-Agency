@@ -120,18 +120,18 @@ export default function Results() {
               </div>
 
               <div className="space-y-3 text-slate-600">
-                <p className="flex items-start gap-2">
+                <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 shrink-0"></div>
                   <span>Implemented full-funnel Meta Ads strategy for local radius.</span>
-                </p>
-                <p className="flex items-start gap-2">
+                </div>
+                <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 shrink-0"></div>
                   <span>Integrated CRM to stop lead leakage at the reception desk.</span>
-                </p>
-                <p className="flex items-start gap-2">
+                </div>
+                <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 shrink-0"></div>
                   <span>Optimized Google My Business for 'best hospital near me'.</span>
-                </p>
+                </div>
               </div>
             </motion.div>
 
@@ -167,18 +167,18 @@ export default function Results() {
               </div>
 
               <div className="space-y-3 text-slate-600">
-                <p className="flex items-start gap-2">
+                <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
                   <span>Launched highly targeted Google Search Ads for joint replacements.</span>
-                </p>
-                <p className="flex items-start gap-2">
+                </div>
+                <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
                   <span>Built a patient education funnel to increase consultation conversions.</span>
-                </p>
-                <p className="flex items-start gap-2">
+                </div>
+                <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
                   <span>Trained front-desk staff on patient handling protocols.</span>
-                </p>
+                </div>
               </div>
             </motion.div>
           </div>

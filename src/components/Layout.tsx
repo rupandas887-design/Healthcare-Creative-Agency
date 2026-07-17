@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Activity, MessageCircle, ChevronRight, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
+import { Menu, X, Activity, MessageCircle, ChevronRight, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Youtube, Lock } from 'lucide-react';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -14,7 +14,15 @@ const navLinks = [
 export default function Layout() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const checkAdminAuth = () => {
+      setIsAdminLoggedIn(localStorage.getItem('opd_admin_authenticated') === 'true');
+    };
+    checkAdminAuth();
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,13 +82,31 @@ export default function Layout() {
               </Link>
             </nav>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden text-slate-600 hover:text-primary-600 transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+            {/* Right side controls (Admin Button & Mobile Menu Toggle) */}
+            <div className="flex items-center gap-4">
+              <Link
+                to={isAdminLoggedIn ? "/admin" : "/admin/login"}
+                id="header-admin-login-btn"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-5 sm:py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-primary-700 hover:border-primary-500 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
+              >
+                <Lock size={14} className="text-slate-400 group-hover:text-primary-600 transition-colors shrink-0" />
+                <span className="hidden sm:inline">
+                  {isAdminLoggedIn ? 'Admin Dashboard' : 'Admin Login'}
+                </span>
+                <span className="sm:hidden">
+                  {isAdminLoggedIn ? 'Admin' : 'Login'}
+                </span>
+              </Link>
+
+              {/* Mobile Menu Button */}
+              <button
+                id="header-mobile-menu-btn"
+                className="md:hidden text-slate-600 hover:text-primary-600 transition-colors cursor-pointer"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
           </div>
         </div>
       </header>
