@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -365,6 +365,39 @@ const GlowingBackground = () => {
 };
 
 export default function Assessment() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToContainer = () => {
+    if (!containerRef.current) return;
+    const offset = 90; // comfortable spacing from fixed top navbar
+    const targetY = window.pageYOffset + containerRef.current.getBoundingClientRect().top - offset;
+    const startY = window.pageYOffset;
+    const distance = targetY - startY;
+    if (Math.abs(distance) < 10) return; // already close enough
+
+    const duration = 600; // 600ms within 500-700ms requirement
+    let startTime: number | null = null;
+
+    const animateScroll = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // EaseInOutQuad transition formula
+      const ease = progress < 0.5 
+        ? 2 * progress * progress 
+        : -1 + (4 - 2 * progress) * progress;
+
+      window.scrollTo(0, startY + distance * ease);
+
+      if (elapsed < duration) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  };
+
   useEffect(() => {
     document.title = "Partnership Readiness Assessment (APRA) | Acquire OPD";
     window.scrollTo(0, 0);
@@ -389,6 +422,16 @@ export default function Assessment() {
   // step === 18: Personalized Insights & Prescribed Recommendation Report
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
+
+  useEffect(() => {
+    // Only scroll if we are actively moving between steps
+    if (step >= 0 && step <= 17) {
+      const timer = setTimeout(() => {
+        scrollToContainer();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
   // User Contact Lead Info
   const [lead, setLead] = useState({
@@ -1013,43 +1056,27 @@ Thank you!`;
         )}
       </AnimatePresence>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
+      <div className="max-w-4xl lg:max-w-[960px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
         
         {/* Diagnostic Page Header */}
         {step < 18 && (
           <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-xs font-semibold mb-4 border border-emerald-100 shadow-sm animate-pulse"
-            >
-              <Sparkles size={14} className="animate-spin-slow" />
-              Strategic Growth Diagnostics
-            </motion.div>
             <motion.h1 
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-2xl sm:text-4xl font-display font-extrabold mb-3 leading-tight tracking-tight text-slate-900"
+              className="text-2xl sm:text-4xl font-display font-extrabold leading-tight tracking-tight text-slate-900"
             >
               Partnership Readiness Assessment
             </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto font-light leading-relaxed"
-            >
-              Surgeons diagnose before prescribing. This interactive compatibility index evaluates your clinical operations, mindset, and readiness for geographic exclusivity.
-            </motion.p>
           </div>
         )}
 
         {/* Main premium animated-border glass-white card container */}
-        <div className="relative p-[1px] rounded-[20px] overflow-hidden bg-gray-200 shadow-xl shadow-slate-100">
+        <div ref={containerRef} className="relative p-[1px] rounded-[24px] overflow-hidden bg-slate-200/60 shadow-2xl shadow-slate-200/50 transition-all duration-300">
           
           <div 
             onMouseMove={handleMouseMove}
-            className="relative bg-white/95 backdrop-blur-3xl rounded-[19px] overflow-hidden"
+            className="relative bg-white/95 backdrop-blur-3xl rounded-[23px] overflow-hidden"
             style={{
               '--x': `${coords.x}px`,
               '--y': `${coords.y}px`,
@@ -1090,7 +1117,7 @@ Thank you!`;
             )}
 
             {/* Card Body Container */}
-            <div className="p-6 sm:p-10">
+            <div className="p-5 sm:p-10">
               <AnimatePresence mode="wait">
               
               {/* STEP 0: Lead Form */}
@@ -1323,16 +1350,15 @@ Thank you!`;
               {step >= 1 && step <= 14 && (
                 <motion.div
                   key={`step-${step}`}
-                  custom={direction}
                   variants={{
-                    enter: (dir: number) => ({ x: dir > 0 ? 100 : -100, opacity: 0, scale: 0.98 }),
-                    center: { x: 0, opacity: 1, scale: 1 },
-                    exit: (dir: number) => ({ x: dir < 0 ? 100 : -100, opacity: 0, scale: 0.98 })
+                    enter: { y: 15, opacity: 0 },
+                    center: { y: 0, opacity: 1 },
+                    exit: { y: -15, opacity: 0 }
                   }}
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
                   className="space-y-8"
                 >
                   {/* Question Header */}
@@ -1423,22 +1449,18 @@ Thank you!`;
               {step === 15 && (
                 <motion.div
                   key="step-15"
-                  custom={direction}
                   variants={{
-                    enter: (dir: number) => ({ x: dir > 0 ? 100 : -100, opacity: 0, scale: 0.98 }),
-                    center: { x: 0, opacity: 1, scale: 1 },
-                    exit: (dir: number) => ({ x: dir < 0 ? 100 : -100, opacity: 0, scale: 0.98 })
+                    enter: { y: 15, opacity: 0 },
+                    center: { y: 0, opacity: 1 },
+                    exit: { y: -15, opacity: 0 }
                   }}
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
                   className="space-y-8"
                 >
                   <div className="space-y-4">
-                    <span className="inline-flex text-[10px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 px-3 py-1 rounded-full border border-rose-100">
-                      Critical Alignment Filter
-                    </span>
                     <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 leading-tight">
                       {knockouts[0].text}
                     </h3>
@@ -1508,22 +1530,18 @@ Thank you!`;
               {step === 16 && (
                 <motion.div
                   key="step-16"
-                  custom={direction}
                   variants={{
-                    enter: (dir: number) => ({ x: dir > 0 ? 100 : -100, opacity: 0, scale: 0.98 }),
-                    center: { x: 0, opacity: 1, scale: 1 },
-                    exit: (dir: number) => ({ x: dir < 0 ? 100 : -100, opacity: 0, scale: 0.98 })
+                    enter: { y: 15, opacity: 0 },
+                    center: { y: 0, opacity: 1 },
+                    exit: { y: -15, opacity: 0 }
                   }}
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
                   className="space-y-8"
                 >
                   <div className="space-y-4">
-                    <span className="inline-flex text-[10px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 px-3 py-1 rounded-full border border-rose-100">
-                      Critical Alignment Filter
-                    </span>
                     <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 leading-tight">
                       {knockouts[1].text}
                     </h3>

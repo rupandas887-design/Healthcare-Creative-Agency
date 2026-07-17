@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, Lock, Eye, EyeOff, Loader2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -27,9 +28,40 @@ export default function AdminLogin() {
     // Simulate small latency for realistic premium security feel
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    if (email.trim().toLowerCase() === 'admin@gmail.com' && password === 'Welcome@123') {
+    const enteredEmail = email.trim().toLowerCase();
+
+    try {
+      if (supabase) {
+        // Query the database to check if there is a match
+        const { data, error: dbError } = await supabase
+          .from('admin_credentials')
+          .select('email, password_hash')
+          .eq('email', enteredEmail)
+          .maybeSingle();
+
+        if (!dbError && data) {
+          // Found matching email. Now verify password
+          if (data.password_hash === password) {
+            localStorage.setItem('opd_admin_authenticated', 'true');
+            localStorage.setItem('opd_admin_email', enteredEmail);
+            localStorage.setItem('opd_admin_session_time', new Date().toISOString());
+            navigate('/admin', { replace: true });
+            return;
+          } else {
+            setError('Invalid email or password. Please use correct credentials.');
+            setIsLoading(false);
+            return;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Database login failed, trying fallback:', err);
+    }
+
+    // Fallback to local default credentials
+    if (enteredEmail === 'admin@gmail.com' && password === 'Welcome@123') {
       localStorage.setItem('opd_admin_authenticated', 'true');
-      localStorage.setItem('opd_admin_email', email);
+      localStorage.setItem('opd_admin_email', enteredEmail);
       localStorage.setItem('opd_admin_session_time', new Date().toISOString());
       navigate('/admin', { replace: true });
     } else {
