@@ -643,14 +643,14 @@ export default function Assessment() {
 
     if (isDev) {
       console.log("Submitting Assessment", formData);
+    } else {
+      console.log("Submitting Assessment:", { name: formData.name, hospital: formData.hospital });
     }
 
     // Check if Supabase client is configured
     if (!isSupabaseConfigured || !supabase) {
       const dbError = 'Supabase client is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your settings.';
-      if (isDev) {
-        console.error(dbError);
-      }
+      console.error("Supabase Error:", dbError);
       setErrorMsg(dbError);
       setToast({ message: dbError, type: 'error' });
       setFormState('error');
@@ -669,9 +669,7 @@ export default function Assessment() {
 
       // Handle missing table error (PGRST205 or similar table-not-found codes like 42P01)
       if (error && (error.code === 'PGRST205' || error.code === '42P01' || error.message?.includes('cache') || error.message?.includes('not find'))) {
-        if (isDev) {
-          console.warn("Table 'assessment_submissions' not found. Falling back to 'submissions' table...");
-        }
+        console.warn("Table 'assessment_submissions' not found. Falling back to 'submissions' table...");
         const fallbackResult = await supabase
           .from('submissions')
           .insert([formData])
@@ -681,16 +679,18 @@ export default function Assessment() {
         data = fallbackResult.data;
       }
 
-      if (isDev) {
-        console.log("Supabase Response", { data, error });
-      }
+      console.log("Supabase Response:", { data, error });
 
       if (error) {
-        if (isDev) {
-          console.error("Supabase Error detail:", error);
+        console.error("Detailed Supabase Database Error:", error);
+        
+        let finalErrorMsg = `Supabase Error: ${error.message} (Code: ${error.code || 'unknown'})`;
+        
+        if (error.code === '42501' || error.message?.toLowerCase().includes('security policy') || error.message?.toLowerCase().includes('policy')) {
+          finalErrorMsg += " - This is a Row-Level Security (RLS) issue. Please copy the SQL statements in 'supabase_schema.sql' and run them inside your Supabase SQL Editor to grant public write permissions.";
+        } else if (error.code === 'PGRST205' || error.code === '42P01' || error.message?.toLowerCase().includes('cache') || error.message?.toLowerCase().includes('not find')) {
+          finalErrorMsg += " - The required table does not exist. Please run the table creation script in 'supabase_schema.sql' inside your Supabase SQL Editor.";
         }
-        const friendlyMsg = "We encountered a database issue while saving your assessment. Please try again.";
-        const finalErrorMsg = isDev ? `Supabase Error: ${error.message} (${error.code})` : friendlyMsg;
         
         setErrorMsg(finalErrorMsg);
         setToast({ message: finalErrorMsg, type: 'error' });
@@ -734,11 +734,9 @@ export default function Assessment() {
       setFormState('success');
       setStep(18); // Go to Diagnostic Blueprint report screen
     } catch (err: any) {
-      if (isDev) {
-        console.error("Submission failed with exception:", err);
-      }
+      console.error("Submission failed with exception:", err);
       const errMessage = err?.message || String(err);
-      const displayError = isDev ? `Unexpected Error: ${errMessage}` : "An unexpected network or system error occurred. Please try again.";
+      const displayError = `Unexpected Error: ${errMessage}`;
       setErrorMsg(displayError);
       setToast({ message: displayError, type: 'error' });
       setFormState('error');
