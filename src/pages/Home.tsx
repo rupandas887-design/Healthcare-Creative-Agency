@@ -542,7 +542,7 @@ export default function Home() {
                     Partnership Compatibility Index
                   </span>
                   <h3 className="text-3xl md:text-4xl font-display font-bold leading-tight">
-                    Take the Partnership Readiness Assessment (APRA)
+                    Take the Surgical Practice Growth Audit
                   </h3>
                   <p className="text-slate-400 text-sm md:text-base leading-relaxed">
                     Before we prescribe any strategic roadmap, we diagnose your current clinical setup. Audit your surgical volumes, growth mindset, operational metrics, and exclusive geography eligibility in 3 minutes.
@@ -562,7 +562,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-emerald-400" />
-                      <span className="text-xs text-slate-300 font-medium">Free Clinical Audit Consultation</span>
+                      <span className="text-xs text-slate-300 font-medium">Free Growth Audit Consultation</span>
                     </div>
                   </div>
                 </div>
@@ -571,7 +571,7 @@ export default function Home() {
                     to="/assessment" 
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-4 px-8 rounded-2xl transition-all shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 cursor-pointer text-base"
                   >
-                    Start Assessment Quiz
+                    Start Growth Audit
                     <ArrowRight size={18} />
                   </Link>
                 </div>

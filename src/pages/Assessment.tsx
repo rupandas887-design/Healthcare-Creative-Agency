@@ -264,7 +264,20 @@ const backgroundIcons = [
   { Icon: HeartHandshake, bottom: '45%', left: '12%', delay: 4 }
 ];
 
-const GlowingBackground = () => {
+const staticParticles = [
+  { width: "5px", height: "5px", top: "15%", left: "25%", duration: 7, delay: 0.5, yOffset: -30, xOffset: 8 },
+  { width: "8px", height: "8px", top: "35%", left: "75%", duration: 9, delay: 1.2, yOffset: -25, xOffset: -6 },
+  { width: "4px", height: "4px", top: "55%", left: "15%", duration: 6, delay: 2.1, yOffset: -35, xOffset: 12 },
+  { width: "7px", height: "7px", top: "72%", left: "82%", duration: 8, delay: 0.8, yOffset: -20, xOffset: -10 },
+  { width: "6px", height: "6px", top: "42%", left: "48%", duration: 11, delay: 3.0, yOffset: -30, xOffset: 5 },
+  { width: "5px", height: "5px", top: "28%", left: "88%", duration: 10, delay: 1.5, yOffset: -25, xOffset: -8 },
+  { width: "9px", height: "9px", top: "68%", left: "32%", duration: 7.5, delay: 2.5, yOffset: -32, xOffset: 10 },
+  { width: "4px", height: "4px", top: "88%", left: "62%", duration: 12, delay: 0.2, yOffset: -28, xOffset: -5 },
+  { width: "6px", height: "6px", top: "12%", left: "65%", duration: 8.5, delay: 1.8, yOffset: -24, xOffset: 7 },
+  { width: "8px", height: "8px", top: "50%", left: "92%", duration: 9.5, delay: 2.2, yOffset: -34, xOffset: -12 }
+];
+
+const GlowingBackground = React.memo(() => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 select-none bg-white">
       {/* Soft Moving light blobs */}
@@ -308,26 +321,26 @@ const GlowingBackground = () => {
 
       {/* Floating Glowing Circles / Light Particles */}
       <div className="absolute inset-0">
-        {Array.from({ length: 10 }).map((_, i) => (
+        {staticParticles.map((pt, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full bg-emerald-500/10 blur-[1px]"
             style={{
-              width: `${Math.random() * 6 + 3}px`,
-              height: `${Math.random() * 6 + 3}px`,
-              top: `${Math.random() * 80 + 10}%`,
-              left: `${Math.random() * 80 + 10}%`,
+              width: pt.width,
+              height: pt.height,
+              top: pt.top,
+              left: pt.left,
             }}
             animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 16 - 8, 0],
+              y: [0, pt.yOffset, 0],
+              x: [0, pt.xOffset, 0],
               opacity: [0.15, 0.4, 0.15]
             }}
             transition={{
-              duration: Math.random() * 8 + 6,
+              duration: pt.duration,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: Math.random() * 4
+              delay: pt.delay
             }}
           />
         ))}
@@ -362,7 +375,74 @@ const GlowingBackground = () => {
       })}
     </div>
   );
-};
+});
+
+const OptimizedInput: React.FC<{
+  type?: string;
+  value: string;
+  placeholder: string;
+  hasError: boolean;
+  onValueChange: (val: string) => void;
+  onClearError: () => void;
+}> = React.memo(({ type = "text", value, placeholder, hasError, onValueChange, onClearError }) => {
+  const [localVal, setLocalVal] = useState(value || "");
+
+  useEffect(() => {
+    setLocalVal(value || "");
+  }, [value]);
+
+  const debouncedUpdate = useRef<any>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalVal(val);
+    onClearError();
+    
+    if (debouncedUpdate.current) {
+      clearTimeout(debouncedUpdate.current);
+    }
+    
+    debouncedUpdate.current = setTimeout(() => {
+      onValueChange(val);
+    }, 150); // super fast debounce for instant update but zero keystroke lag
+  };
+
+  const handleBlur = () => {
+    if (debouncedUpdate.current) {
+      clearTimeout(debouncedUpdate.current);
+    }
+    onValueChange(localVal);
+  };
+
+  const isFilled = localVal && localVal.trim() !== "";
+  const borderClass = hasError
+    ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/10 focus:shadow-[0_0_12px_rgba(244,63,94,0.1)]"
+    : isFilled
+      ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500/10 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)]"
+      : "border-slate-200 hover:border-primary-400 focus:border-primary-500 focus:ring-primary-500/10 focus:shadow-[0_0_12px_rgba(59,130,246,0.1)]";
+
+  const className = `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[16px] border ${borderClass} focus:ring-4 focus:outline-none bg-white transition-all duration-300 font-medium text-slate-900 placeholder-slate-400 text-sm shadow-sm hover:shadow-md`;
+
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        value={localVal}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+        className={className}
+      />
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+        {hasError ? (
+          <AlertCircle size={18} className="text-rose-500" />
+        ) : isFilled ? (
+          <CheckCircle2 size={18} className="text-emerald-500" />
+        ) : null}
+      </div>
+    </div>
+  );
+});
 
 export default function Assessment() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -399,7 +479,7 @@ export default function Assessment() {
   };
 
   useEffect(() => {
-    document.title = "Partnership Readiness Assessment (APRA) | Acquire OPD";
+    document.title = "Surgical Practice Growth Audit | Acquire OPD";
     window.scrollTo(0, 0);
   }, []);
 
@@ -446,12 +526,12 @@ export default function Assessment() {
   const getInputClassName = (fieldName: keyof typeof lead, value: string, hasError: boolean) => {
     const isFilled = value && value.trim() !== "";
     const borderClass = hasError
-      ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/15 focus:shadow-[0_0_12px_rgba(244,63,94,0.15)]"
+      ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/10 focus:shadow-[0_0_12px_rgba(244,63,94,0.1)]"
       : isFilled
-        ? "border-emerald-500 focus:border-emerald-500 focus:ring-emerald-500/15 focus:shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-        : "border-gray-300 hover:border-primary-500 focus:border-primary-500 focus:ring-primary-500/15 focus:shadow-[0_0_12px_rgba(37,99,235,0.15)]";
+        ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500/10 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)]"
+        : "border-slate-200 hover:border-primary-400 focus:border-primary-500 focus:ring-primary-500/10 focus:shadow-[0_0_12px_rgba(59,130,246,0.1)]";
 
-    return `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[14px] border-[1.5px] ${borderClass} focus:ring-2 focus:outline-none bg-white transition-all duration-300 font-medium text-slate-900 placeholder-gray-400 text-base shadow-sm`;
+    return `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[16px] border ${borderClass} focus:ring-4 focus:outline-none bg-white transition-all duration-300 font-medium text-slate-900 placeholder-slate-400 text-sm shadow-sm hover:shadow-md`;
   };
 
   // Answers State: maps question ID to index of the chosen option
@@ -805,162 +885,190 @@ export default function Assessment() {
   };
 
   // Determine scoring level and recommended package based on diagnostic blueprint recommendation
-  const { total: finalScore, breakdown: finalBreakdown } = calculateScores();
-  const failedKnockout1 = koAnswers['ko1'] === 'No';
-  const failedKnockout2 = koAnswers['ko2'] === 'No';
-  const hasFailedKnockouts = failedKnockout1 || failedKnockout2;
+  const assessmentData = React.useMemo(() => {
+    const { total: finalScore, breakdown: finalBreakdown } = calculateScores();
+    const failedKnockout1 = koAnswers['ko1'] === 'No';
+    const failedKnockout2 = koAnswers['ko2'] === 'No';
+    const hasFailedKnockouts = failedKnockout1 || failedKnockout2;
 
-  // Personalized insights generation based on section answers
-  const insights = {
-    strengths: [] as { title: string; desc: string }[],
-    opportunities: [] as { title: string; desc: string }[]
-  };
+    // Personalized insights generation based on section answers
+    const insights = {
+      strengths: [] as { title: string; desc: string }[],
+      opportunities: [] as { title: string; desc: string }[]
+    };
 
-  // Populate dynamic Strengths and Opportunities strictly based on sections' answers
-  sections.forEach(sec => {
-    let earned = 0;
-    sec.questions.forEach(q => {
-      const idx = answers[q.id];
-      if (idx !== undefined) earned += q.options[idx].score;
+    // Populate dynamic Strengths and Opportunities strictly based on sections' answers
+    sections.forEach(sec => {
+      let earned = 0;
+      sec.questions.forEach(q => {
+        const idx = answers[q.id];
+        if (idx !== undefined) earned += q.options[idx].score;
+      });
+      const percentage = (earned / sec.maxScore) * 100;
+
+      if (sec.id === 'A') {
+        if (percentage >= 70) {
+          insights.strengths.push({
+            title: "Established Clinical Infrastructure",
+            desc: "Your hospital or specialty clinic's operating age and existing surgical volume create an optimal, solid launchpad for high-volume local positioning."
+          });
+        } else {
+          insights.opportunities.push({
+            title: "Surgical Case-Mix Optimization",
+            desc: "We recommend focusing your online visibility strictly on high-value surgical categories to optimize your current clinical footprint and case-mix value."
+          });
+        }
+      } else if (sec.id === 'B') {
+        if (percentage >= 75) {
+          insights.strengths.push({
+            title: "Direct Growth Acceleration Intent",
+            desc: "Your strong focus on surgical volume growth and building a commanding personal brand will help bypass traditional, passive doctor-referral dependency."
+          });
+        } else {
+          insights.opportunities.push({
+            title: "Bypassing Referral Dependency",
+            desc: "Transitioning your practice from a passive medical network referral model into a structured, direct-to-patient digital channel will offer long-term commercial predictability."
+          });
+        }
+      } else if (sec.id === 'C') {
+        if (percentage >= 75) {
+          insights.strengths.push({
+            title: "High Operational SOP Readiness",
+            desc: "Your front office's willingness to follow standard protocols and adopt digital dashboards ensures high lead-to-OPD conversion with minimal inquiry waste."
+          });
+        } else {
+          insights.opportunities.push({
+            title: "Front-Office Lead Conversion Protocols",
+            desc: "Implementing clean, standardized booking scripts and structured tracking systems for your administrative team will prevent patient loss between initial inquiry and actual OPD visit."
+          });
+        }
+      } else if (sec.id === 'D') {
+        if (percentage >= 70) {
+          insights.strengths.push({
+            title: "Advanced Local Digital Mindset",
+            desc: "Your openness to regular video content and history of marketing channels will shorten patient consideration cycles, setting you up as a clear regional authority."
+          });
+        } else {
+          insights.opportunities.push({
+            title: "Educational Video Content Playbook",
+            desc: "We can guide and direct script templates for you to easily capture short, patient-friendly medical videos, drastically accelerating patient trust and local prominence."
+          });
+        }
+      } else if (sec.id === 'E') {
+        if (percentage >= 70) {
+          insights.strengths.push({
+            title: "Strategic Growth Alignment",
+            desc: "You prioritize solid, compounding system partnerships over low-trust temporary lead-buying. This matches our exclusive surgical growth playbook."
+          });
+        } else {
+          insights.opportunities.push({
+            title: "Structured Strategic Roadmap Phase",
+            desc: "Establishing a pilot phase with clear, milestones before expanding into comprehensive, multi-channel growth systems will lower your operational friction."
+          });
+        }
+      }
     });
-    const percentage = (earned / sec.maxScore) * 100;
 
-    if (sec.id === 'A') {
-      if (percentage >= 70) {
-        insights.strengths.push({
-          title: "Established Clinical Infrastructure",
-          desc: "Your hospital or specialty clinic's operating age and existing surgical volume create an optimal, solid launchpad for high-volume local positioning."
-        });
-      } else {
-        insights.opportunities.push({
-          title: "Surgical Case-Mix Optimization",
-          desc: "We recommend focusing your online visibility strictly on high-value surgical categories to optimize your current clinical footprint and case-mix value."
-        });
-      }
-    } else if (sec.id === 'B') {
-      if (percentage >= 75) {
-        insights.strengths.push({
-          title: "Direct Growth Acceleration Intent",
-          desc: "Your strong focus on surgical volume growth and building a commanding personal brand will help bypass traditional, passive doctor-referral dependency."
-        });
-      } else {
-        insights.opportunities.push({
-          title: "Bypassing Referral Dependency",
-          desc: "Transitioning your practice from a passive medical network referral model into a structured, direct-to-patient digital channel will offer long-term commercial predictability."
-        });
-      }
-    } else if (sec.id === 'C') {
-      if (percentage >= 75) {
-        insights.strengths.push({
-          title: "High Operational SOP Readiness",
-          desc: "Your front office's willingness to follow standard protocols and adopt digital dashboards ensures high lead-to-OPD conversion with minimal inquiry waste."
-        });
-      } else {
-        insights.opportunities.push({
-          title: "Front-Office Lead Conversion Protocols",
-          desc: "Implementing clean, standardized booking scripts and structured tracking systems for your administrative team will prevent patient loss between initial inquiry and actual OPD visit."
-        });
-      }
-    } else if (sec.id === 'D') {
-      if (percentage >= 70) {
-        insights.strengths.push({
-          title: "Advanced Local Digital Mindset",
-          desc: "Your openness to regular video content and history of marketing channels will shorten patient consideration cycles, setting you up as a clear regional authority."
-        });
-      } else {
-        insights.opportunities.push({
-          title: "Educational Video Content Playbook",
-          desc: "We can guide and direct script templates for you to easily capture short, patient-friendly medical videos, drastically accelerating patient trust and local prominence."
-        });
-      }
-    } else if (sec.id === 'E') {
-      if (percentage >= 70) {
-        insights.strengths.push({
-          title: "Strategic Growth Alignment",
-          desc: "You prioritize solid, compounding system partnerships over low-trust temporary lead-buying. This matches our exclusive surgical growth playbook."
-        });
-      } else {
-        insights.opportunities.push({
-          title: "Structured Strategic Roadmap Phase",
-          desc: "Establishing a pilot phase with clear, milestones before expanding into comprehensive, multi-channel growth systems will lower your operational friction."
-        });
-      }
+    // If we don't have enough strengths/opportunities, provide robust default ones
+    if (insights.strengths.length === 0) {
+      insights.strengths.push({
+        title: "Strong Clinical Passion",
+        desc: "Your clinical intent and interest in patient-centric growth offer a strong baseline for deploying professional brand playbooks."
+      });
     }
-  });
+    if (insights.opportunities.length === 0) {
+      insights.opportunities.push({
+        title: "Geographical Prominence Capture",
+        desc: "Deploying high-impact SEO and localized search funnels to capture patients within a 15km catchment area before competitors take dominance."
+      });
+    }
 
-  // If we don't have enough strengths/opportunities, provide robust default ones
-  if (insights.strengths.length === 0) {
-    insights.strengths.push({
-      title: "Strong Clinical Passion",
-      desc: "Your clinical intent and interest in patient-centric growth offer a strong baseline for deploying professional brand playbooks."
-    });
-  }
-  if (insights.opportunities.length === 0) {
-    insights.opportunities.push({
-      title: "Geographical Prominence Capture",
-      desc: "Deploying high-impact SEO and localized search funnels to capture patients within a 15km catchment area before competitors take dominance."
-    });
-  }
-
-  // Recommended Prescribed package according to the Diagnosis-Before-Prescribing Strategy
-  let recommendedPackage = {
-    title: '',
-    price: '',
-    description: '',
-    bullets: [] as string[]
-  };
-
-  let compatibilityTier = '';
-  let compatibilityColor = '';
-  let compatibilityDesc = '';
-
-  if (finalScore >= 85) {
-    compatibilityTier = 'Strategic Alignment Index: Elite Level';
-    compatibilityColor = 'from-emerald-500 to-teal-400 text-slate-900 border-emerald-300';
-    compatibilityDesc = 'Highly Compatible. Your clinic setup, growth objectives, and team alignment match our high-performance Surgical Growth Partnership system.';
-    recommendedPackage = {
-      title: 'Package C – Custom Growth System',
-      price: '₹2,00,000/month',
-      description: 'Comprehensive, multi-channel branding, high-intent performance marketing, active OPD funnels, and standard operating procedures designed for massive, predictable surgical scale.',
-      bullets: [
-        'Advanced Surgeon Personal Branding & Medical Video Production Program',
-        'Omni-channel local surgical performance campaigns (Google, Meta, Local SEO)',
-        'Comprehensive clinical OPD flow and front-office SOP training modules',
-        'Direct CRM systems with real-time growth analytics and dashboard visibility',
-        'Strict regional specialty exclusivity to lock out local clinical competitors'
-      ]
+    // Recommended Prescribed package according to the Diagnosis-Before-Prescribing Strategy
+    let recommendedPackage = {
+      title: '',
+      price: '',
+      description: '',
+      bullets: [] as string[]
     };
-  } else if (finalScore >= 70) {
-    compatibilityTier = 'Strategic Alignment Index: Accelerated Level';
-    compatibilityColor = 'from-blue-500 to-indigo-400 text-slate-900 border-blue-300';
-    compatibilityDesc = 'Strong Compatibility. Your practice has excellent core components ready to expand with structured direct-to-patient OPD generation models.';
-    recommendedPackage = {
-      title: 'Package B – Surgical Growth Program',
-      price: '₹1,50,000/month',
-      description: 'Localized performance marketing and systematic patient acquisition channels paired with custom branding strategies.',
-      bullets: [
-        'Professional Specialty Video and trust copy production templates',
-        'Targeted performance campaigns in local catchment zones to lift OPD volume',
-        'Patient conversion scripts and intake forms for your administrative staff',
-        'Core performance dashboards to track daily enquiries, OPDs, and scheduled surgeries'
-      ]
+
+    let compatibilityTier = '';
+    let compatibilityColor = '';
+    let compatibilityDesc = '';
+
+    if (finalScore >= 85) {
+      compatibilityTier = 'Strategic Alignment Index: Elite Level';
+      compatibilityColor = 'from-emerald-500 to-teal-400 text-slate-900 border-emerald-300';
+      compatibilityDesc = 'Highly Compatible. Your clinic setup, growth objectives, and team alignment match our high-performance Surgical Growth Partnership system.';
+      recommendedPackage = {
+        title: 'Package C – Custom Growth System',
+        price: '₹2,00,000/month',
+        description: 'Comprehensive, multi-channel branding, high-intent performance marketing, active OPD funnels, and standard operating procedures designed for massive, predictable surgical scale.',
+        bullets: [
+          'Advanced Surgeon Personal Branding & Medical Video Production Program',
+          'Omni-channel local surgical performance campaigns (Google, Meta, Local SEO)',
+          'Comprehensive clinical OPD flow and front-office SOP training modules',
+          'Direct CRM systems with real-time growth analytics and dashboard visibility',
+          'Strict regional specialty exclusivity to lock out local clinical competitors'
+        ]
+      };
+    } else if (finalScore >= 70) {
+      compatibilityTier = 'Strategic Alignment Index: Accelerated Level';
+      compatibilityColor = 'from-blue-500 to-indigo-400 text-slate-900 border-blue-300';
+      compatibilityDesc = 'Strong Compatibility. Your practice has excellent core components ready to expand with structured direct-to-patient OPD generation models.';
+      recommendedPackage = {
+        title: 'Package B – Surgical Growth Program',
+        price: '₹1,50,000/month',
+        description: 'Localized performance marketing and systematic patient acquisition channels paired with custom branding strategies.',
+        bullets: [
+          'Professional Specialty Video and trust copy production templates',
+          'Targeted performance campaigns in local catchment zones to lift OPD volume',
+          'Patient conversion scripts and intake forms for your administrative staff',
+          'Core performance dashboards to track daily enquiries, OPDs, and scheduled surgeries'
+        ]
+      };
+    } else {
+      compatibilityTier = 'Strategic Alignment Index: Foundational Level';
+      compatibilityColor = 'from-slate-400 to-slate-300 text-slate-900 border-slate-200';
+      compatibilityDesc = 'Nurture Compatibility. Your clinic requires baseline digital authority setup, website SEO optimization, and introductory content assets before executing high-volume patient lead acquisition campaigns.';
+      recommendedPackage = {
+        title: 'Package A – Brand Foundation Program',
+        price: '₹50,000/month',
+        description: 'Establishing your digital footprint, local search indexing, and core clinical authority structures.',
+        bullets: [
+          'High-converting, responsive clinical web assets with Search Engine Optimization',
+          'Monthly Surgeon content blueprints and professional content outlines',
+          'Patient review collection setups and automated local directory mapping',
+          'Introductory leads tracking structures and inquiry intake guidance'
+        ]
+      };
+    }
+
+    return {
+      finalScore,
+      finalBreakdown,
+      failedKnockout1,
+      failedKnockout2,
+      hasFailedKnockouts,
+      insights,
+      recommendedPackage,
+      compatibilityTier,
+      compatibilityColor,
+      compatibilityDesc
     };
-  } else {
-    compatibilityTier = 'Strategic Alignment Index: Foundational Level';
-    compatibilityColor = 'from-slate-400 to-slate-300 text-slate-900 border-slate-200';
-    compatibilityDesc = 'Nurture Compatibility. Your clinic requires baseline digital authority setup, website SEO optimization, and introductory content assets before executing high-volume patient lead acquisition campaigns.';
-    recommendedPackage = {
-      title: 'Package A – Brand Foundation Program',
-      price: '₹50,000/month',
-      description: 'Establishing your digital footprint, local search indexing, and core clinical authority structures.',
-      bullets: [
-        'High-converting, responsive clinical web assets with Search Engine Optimization',
-        'Monthly Surgeon content blueprints and professional content outlines',
-        'Patient review collection setups and automated local directory mapping',
-        'Introductory leads tracking structures and inquiry intake guidance'
-      ]
-    };
-  }
+  }, [answers, koAnswers]);
+
+  const {
+    finalScore,
+    finalBreakdown,
+    failedKnockout1,
+    failedKnockout2,
+    hasFailedKnockouts,
+    insights,
+    recommendedPackage,
+    compatibilityTier,
+    compatibilityColor,
+    compatibilityDesc
+  } = assessmentData;
 
   // Display helper variables (resolves reset form clearing active report views)
   const displayLeadName = submittedResults ? submittedResults.leadName : lead.name;
@@ -1066,17 +1174,17 @@ Thank you!`;
               animate={{ opacity: 1, y: 0 }}
               className="text-2xl sm:text-4xl font-display font-extrabold leading-tight tracking-tight text-slate-900"
             >
-              Partnership Readiness Assessment
+              Surgical Practice Growth Audit
             </motion.h1>
           </div>
         )}
 
         {/* Main premium animated-border glass-white card container */}
-        <div ref={containerRef} className="relative p-[1px] rounded-[24px] overflow-hidden bg-slate-200/60 shadow-2xl shadow-slate-200/50 transition-all duration-300">
+        <div ref={containerRef} className="relative p-[1px] rounded-[20px] overflow-hidden bg-slate-200/60 shadow-2xl shadow-slate-200/50 transition-all duration-300">
           
           <div 
             onMouseMove={handleMouseMove}
-            className="relative bg-white/95 backdrop-blur-3xl rounded-[23px] overflow-hidden"
+            className="relative bg-white/95 backdrop-blur-3xl rounded-[19px] overflow-hidden"
             style={{
               '--x': `${coords.x}px`,
               '--y': `${coords.y}px`,
@@ -1133,9 +1241,9 @@ Thank you!`;
                     <div className="w-14 h-14 bg-gradient-to-tr from-primary-500 to-emerald-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-400/20 shadow-md shadow-primary-500/10">
                       <Activity size={24} className="animate-pulse" />
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 mb-2">Practice Profile Setup</h2>
+                    <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 mb-2">Practice Profile</h2>
                     <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-light">
-                      Enter your clinical registration details to configure the geographic criteria of our diagnostic algorithm.
+                      Enter your clinical details.
                     </p>
                   </div>
 
@@ -1145,31 +1253,21 @@ Thank you!`;
                         <User size={15} className="text-primary-500 shrink-0" />
                         <span>Full Name <span className="text-rose-500">*</span></span>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={lead.name}
-                          onChange={(e) => {
-                            setLead({ ...lead, name: e.target.value });
-                            if (formErrors.name) {
-                              setFormErrors(prev => {
-                                const copy = { ...prev };
-                                delete copy.name;
-                                return copy;
-                              });
-                            }
-                          }}
-                          placeholder="Dr. Rajesh Kumar"
-                          className={getInputClassName('name', lead.name, !!formErrors.name)}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                          {formErrors.name ? (
-                            <AlertCircle size={18} className="text-rose-500" />
-                          ) : lead.name.trim() !== '' ? (
-                            <CheckCircle2 size={18} className="text-emerald-500" />
-                          ) : null}
-                        </div>
-                      </div>
+                      <OptimizedInput
+                        value={lead.name}
+                        placeholder="Dr. Rajesh Kumar"
+                        hasError={!!formErrors.name}
+                        onValueChange={(val) => setLead(prev => ({ ...prev, name: val }))}
+                        onClearError={() => {
+                          if (formErrors.name) {
+                            setFormErrors(prev => {
+                              const copy = { ...prev };
+                              delete copy.name;
+                              return copy;
+                            });
+                          }
+                        }}
+                      />
                       {formErrors.name && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
                           <AlertCircle size={12} />
@@ -1183,31 +1281,21 @@ Thank you!`;
                         <Building2 size={15} className="text-primary-500 shrink-0" />
                         <span>Hospital / Clinic Name <span className="text-rose-500">*</span></span>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={lead.hospital}
-                          onChange={(e) => {
-                            setLead({ ...lead, hospital: e.target.value });
-                            if (formErrors.hospital) {
-                              setFormErrors(prev => {
-                                const copy = { ...prev };
-                                delete copy.hospital;
-                                return copy;
-                              });
-                            }
-                          }}
-                          placeholder="Arogya Surgical Hospital"
-                          className={getInputClassName('hospital', lead.hospital, !!formErrors.hospital)}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                          {formErrors.hospital ? (
-                            <AlertCircle size={18} className="text-rose-500" />
-                          ) : lead.hospital.trim() !== '' ? (
-                            <CheckCircle2 size={18} className="text-emerald-500" />
-                          ) : null}
-                        </div>
-                      </div>
+                      <OptimizedInput
+                        value={lead.hospital}
+                        placeholder="Arogya Surgical Hospital"
+                        hasError={!!formErrors.hospital}
+                        onValueChange={(val) => setLead(prev => ({ ...prev, hospital: val }))}
+                        onClearError={() => {
+                          if (formErrors.hospital) {
+                            setFormErrors(prev => {
+                              const copy = { ...prev };
+                              delete copy.hospital;
+                              return copy;
+                            });
+                          }
+                        }}
+                      />
                       {formErrors.hospital && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
                           <AlertCircle size={12} />
@@ -1221,31 +1309,22 @@ Thank you!`;
                         <Phone size={15} className="text-primary-500 shrink-0" />
                         <span>WhatsApp Mobile Number <span className="text-rose-500">*</span></span>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="tel"
-                          value={lead.mobile}
-                          onChange={(e) => {
-                            setLead({ ...lead, mobile: e.target.value });
-                            if (formErrors.mobile) {
-                              setFormErrors(prev => {
-                                const copy = { ...prev };
-                                delete copy.mobile;
-                                return copy;
-                              });
-                            }
-                          }}
-                          placeholder="+91 98449 55100"
-                          className={getInputClassName('mobile', lead.mobile, !!formErrors.mobile)}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                          {formErrors.mobile ? (
-                            <AlertCircle size={18} className="text-rose-500" />
-                          ) : lead.mobile.trim() !== '' ? (
-                            <CheckCircle2 size={18} className="text-emerald-500" />
-                          ) : null}
-                        </div>
-                      </div>
+                      <OptimizedInput
+                        type="tel"
+                        value={lead.mobile}
+                        placeholder="+91 98449 55100"
+                        hasError={!!formErrors.mobile}
+                        onValueChange={(val) => setLead(prev => ({ ...prev, mobile: val }))}
+                        onClearError={() => {
+                          if (formErrors.mobile) {
+                            setFormErrors(prev => {
+                              const copy = { ...prev };
+                              delete copy.mobile;
+                              return copy;
+                            });
+                          }
+                        }}
+                      />
                       {formErrors.mobile && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
                           <AlertCircle size={12} />
@@ -1259,31 +1338,22 @@ Thank you!`;
                         <Mail size={15} className="text-primary-500 shrink-0" />
                         <span>Email Address <span className="text-rose-500">*</span></span>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          value={lead.email}
-                          onChange={(e) => {
-                            setLead({ ...lead, email: e.target.value });
-                            if (formErrors.email) {
-                              setFormErrors(prev => {
-                                const copy = { ...prev };
-                                delete copy.email;
-                                return copy;
-                              });
-                            }
-                          }}
-                          placeholder="drrajesh@gmail.com"
-                          className={getInputClassName('email', lead.email, !!formErrors.email)}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                          {formErrors.email ? (
-                            <AlertCircle size={18} className="text-rose-500" />
-                          ) : lead.email.trim() !== '' ? (
-                            <CheckCircle2 size={18} className="text-emerald-500" />
-                          ) : null}
-                        </div>
-                      </div>
+                      <OptimizedInput
+                        type="email"
+                        value={lead.email}
+                        placeholder="drrajesh@gmail.com"
+                        hasError={!!formErrors.email}
+                        onValueChange={(val) => setLead(prev => ({ ...prev, email: val }))}
+                        onClearError={() => {
+                          if (formErrors.email) {
+                            setFormErrors(prev => {
+                              const copy = { ...prev };
+                              delete copy.email;
+                              return copy;
+                            });
+                          }
+                        }}
+                      />
                       {formErrors.email && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
                           <AlertCircle size={12} />
@@ -1297,31 +1367,21 @@ Thank you!`;
                         <MapPin size={15} className="text-primary-500 shrink-0" />
                         <span>City of Practice <span className="text-rose-500">*</span></span>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={lead.city}
-                          onChange={(e) => {
-                            setLead({ ...lead, city: e.target.value });
-                            if (formErrors.city) {
-                              setFormErrors(prev => {
-                                const copy = { ...prev };
-                                delete copy.city;
-                                return copy;
-                              });
-                            }
-                          }}
-                          placeholder="Bengaluru"
-                          className={getInputClassName('city', lead.city, !!formErrors.city)}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                          {formErrors.city ? (
-                            <AlertCircle size={18} className="text-rose-500" />
-                          ) : lead.city.trim() !== '' ? (
-                            <CheckCircle2 size={18} className="text-emerald-500" />
-                          ) : null}
-                        </div>
-                      </div>
+                      <OptimizedInput
+                        value={lead.city}
+                        placeholder="Bengaluru"
+                        hasError={!!formErrors.city}
+                        onValueChange={(val) => setLead(prev => ({ ...prev, city: val }))}
+                        onClearError={() => {
+                          if (formErrors.city) {
+                            setFormErrors(prev => {
+                              const copy = { ...prev };
+                              delete copy.city;
+                              return copy;
+                            });
+                          }
+                        }}
+                      />
                       {formErrors.city && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
                           <AlertCircle size={12} />
@@ -1336,13 +1396,15 @@ Thank you!`;
                     <span>HIPAA and DPDP Patient Data Privacy Security Protection Assured.</span>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.01, y: -1 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={handleNextFromLead}
-                    className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white font-bold py-4 px-6 rounded-2xl shadow-md hover:shadow-primary-600/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
+                    className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-4 px-6 rounded-[16px] shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide"
                   >
                     Start Growth Assessment
                     <ChevronRight size={16} />
-                  </button>
+                  </motion.button>
                 </motion.div>
               )}
 
@@ -1358,7 +1420,7 @@ Thank you!`;
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
                   className="space-y-8"
                 >
                   {/* Question Header */}
@@ -1384,13 +1446,13 @@ Thank you!`;
                       return (
                         <motion.button
                           key={oIdx}
-                          whileHover={{ scale: 1.015, y: -2 }}
-                          whileTap={{ scale: 0.985 }}
+                          whileHover={{ scale: 1.01, y: -1 }}
+                          whileTap={{ scale: 0.99 }}
                           onClick={() => handleOptionSelect(q.id, oIdx)}
-                          className={`text-left p-6 sm:p-7 rounded-[14px] border-[1.5px] transition-all duration-300 relative overflow-hidden flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
+                          className={`text-left p-5 sm:p-6 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex items-center justify-between cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary-500/10 ${
                             isSelected 
-                              ? 'bg-primary-50/40 border-2 border-primary-500 text-slate-900 shadow-[0_4px_20px_rgba(37,99,235,0.15)]' 
-                              : 'bg-white hover:bg-slate-50 border-gray-300 hover:border-primary-500 text-slate-800 shadow-sm'
+                              ? 'bg-primary-50/50 border-primary-500 text-slate-900 shadow-[0_4px_20px_rgba(59,130,246,0.1)]' 
+                              : 'bg-white hover:bg-slate-50/80 border-slate-200 hover:border-primary-400 text-slate-800 shadow-sm hover:shadow'
                           }`}
                         >
                           <div className="flex items-center gap-4 w-full mr-4">
@@ -1421,26 +1483,30 @@ Thank you!`;
                   </div>
 
                   {/* Navigation Buttons */}
-                  <div className="pt-6 border-t border-gray-100 flex gap-4">
-                    <button
+                  <div className="pt-6 border-t border-slate-100 flex gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      whileTap={{ scale: 0.99 }}
                       onClick={goToPrevStep}
-                      className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 text-slate-600 font-semibold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm transform hover:-translate-y-0.5"
+                      className="flex-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3.5 px-6 rounded-[16px] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm shadow-sm hover:shadow"
                     >
                       <ChevronLeft size={16} />
                       Back
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={isCurrentQuestionAnswered() ? { scale: 1.01, y: -1 } : {}}
+                      whileTap={isCurrentQuestionAnswered() ? { scale: 0.99 } : {}}
                       disabled={!isCurrentQuestionAnswered()}
                       onClick={goToNextStep}
-                      className={`flex-1 font-semibold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-1.5 text-sm transform ${
+                      className={`flex-1 font-semibold py-3.5 px-6 rounded-[16px] transition-all flex items-center justify-center gap-1.5 text-sm ${
                         isCurrentQuestionAnswered()
-                          ? 'bg-primary-600 hover:bg-primary-500 text-white shadow-md shadow-primary-600/10 cursor-pointer hover:-translate-y-0.5'
-                          : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/10 cursor-pointer'
+                          : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                       }`}
                     >
                       Next Question
                       <ChevronRight size={16} />
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               )}
@@ -1457,7 +1523,7 @@ Thank you!`;
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
                   className="space-y-8"
                 >
                   <div className="space-y-4">
@@ -1472,13 +1538,13 @@ Thank you!`;
                       return (
                         <motion.button
                           key={opt.value}
-                          whileHover={{ scale: 1.015, y: -2 }}
-                          whileTap={{ scale: 0.985 }}
+                          whileHover={{ scale: 1.01, y: -1 }}
+                          whileTap={{ scale: 0.99 }}
                           onClick={() => handleKoSelect('ko1', opt.value)}
-                          className={`text-left p-6 sm:p-7 rounded-[14px] border-[1.5px] transition-all duration-300 relative overflow-hidden flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
+                          className={`text-left p-5 sm:p-6 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex items-center justify-between cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary-500/10 ${
                             isSelected 
-                              ? 'bg-primary-50/40 border-2 border-primary-500 text-slate-900 shadow-[0_4px_20px_rgba(37,99,235,0.15)]' 
-                              : 'bg-white hover:bg-slate-50 border-gray-300 hover:border-primary-500 text-slate-800 shadow-sm'
+                              ? 'bg-primary-50/50 border-primary-500 text-slate-900 shadow-[0_4px_20px_rgba(59,130,246,0.1)]' 
+                              : 'bg-white hover:bg-slate-50/80 border-slate-200 hover:border-primary-400 text-slate-800 shadow-sm hover:shadow'
                           }`}
                         >
                           <div className="flex items-center gap-4 w-full mr-4">
@@ -1502,26 +1568,30 @@ Thank you!`;
                     })}
                   </div>
 
-                  <div className="pt-6 border-t border-gray-100 flex gap-4">
-                    <button
+                  <div className="pt-6 border-t border-slate-100 flex gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      whileTap={{ scale: 0.99 }}
                       onClick={goToPrevStep}
-                      className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 text-slate-600 font-semibold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm transform hover:-translate-y-0.5"
+                      className="flex-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3.5 px-6 rounded-[16px] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm shadow-sm hover:shadow"
                     >
                       <ChevronLeft size={16} />
                       Back
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={isCurrentQuestionAnswered() ? { scale: 1.01, y: -1 } : {}}
+                      whileTap={isCurrentQuestionAnswered() ? { scale: 0.99 } : {}}
                       disabled={!isCurrentQuestionAnswered()}
                       onClick={goToNextStep}
-                      className={`flex-1 font-semibold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-1.5 text-sm transform ${
+                      className={`flex-1 font-semibold py-3.5 px-6 rounded-[16px] transition-all flex items-center justify-center gap-1.5 text-sm ${
                         isCurrentQuestionAnswered()
-                          ? 'bg-primary-600 hover:bg-primary-500 text-white shadow-md shadow-primary-600/10 cursor-pointer hover:-translate-y-0.5'
-                          : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/10 cursor-pointer'
+                          : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                       }`}
                     >
                       Next Filter
                       <ChevronRight size={16} />
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               )}
@@ -1538,7 +1608,7 @@ Thank you!`;
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
                   className="space-y-8"
                 >
                   <div className="space-y-4">
@@ -1553,13 +1623,13 @@ Thank you!`;
                       return (
                         <motion.button
                           key={opt.value}
-                          whileHover={{ scale: 1.015, y: -2 }}
-                          whileTap={{ scale: 0.985 }}
+                          whileHover={{ scale: 1.01, y: -1 }}
+                          whileTap={{ scale: 0.99 }}
                           onClick={() => handleKoSelect('ko2', opt.value)}
-                          className={`text-left p-6 sm:p-7 rounded-[14px] border-[1.5px] transition-all duration-300 relative overflow-hidden flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
+                          className={`text-left p-5 sm:p-6 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex items-center justify-between cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary-500/10 ${
                             isSelected 
-                              ? 'bg-primary-50/40 border-2 border-primary-500 text-slate-900 shadow-[0_4px_20px_rgba(37,99,235,0.15)]' 
-                              : 'bg-white hover:bg-slate-50 border-gray-300 hover:border-primary-500 text-slate-800 shadow-sm'
+                              ? 'bg-primary-50/50 border-primary-500 text-slate-900 shadow-[0_4px_20px_rgba(59,130,246,0.1)]' 
+                              : 'bg-white hover:bg-slate-50/80 border-slate-200 hover:border-primary-400 text-slate-800 shadow-sm hover:shadow'
                           }`}
                         >
                           <div className="flex items-center gap-4 w-full mr-4">
@@ -1583,26 +1653,30 @@ Thank you!`;
                     })}
                   </div>
 
-                  <div className="pt-6 border-t border-gray-100 flex gap-4">
-                    <button
+                  <div className="pt-6 border-t border-slate-100 flex gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      whileTap={{ scale: 0.99 }}
                       onClick={goToPrevStep}
-                      className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 text-slate-600 font-semibold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm transform hover:-translate-y-0.5"
+                      className="flex-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3.5 px-6 rounded-[16px] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm shadow-sm hover:shadow"
                     >
                       <ChevronLeft size={16} />
                       Back
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={isCurrentQuestionAnswered() ? { scale: 1.01, y: -1 } : {}}
+                      whileTap={isCurrentQuestionAnswered() ? { scale: 0.99 } : {}}
                       disabled={!isCurrentQuestionAnswered()}
                       onClick={goToNextStep}
-                      className={`flex-1 font-semibold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-1.5 text-sm transform ${
+                      className={`flex-1 font-semibold py-3.5 px-6 rounded-[16px] transition-all flex items-center justify-center gap-1.5 text-sm ${
                         isCurrentQuestionAnswered()
-                          ? 'bg-primary-600 hover:bg-primary-500 text-white shadow-md shadow-primary-600/10 cursor-pointer hover:-translate-y-0.5'
-                          : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/10 cursor-pointer'
+                          : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                       }`}
                     >
                       Process Analysis
                       <ChevronRight size={16} />
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               )}
@@ -1684,272 +1758,35 @@ Thank you!`;
                   key="step-18"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="space-y-10"
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="py-12 sm:py-16 flex flex-col items-center text-center space-y-8 max-w-lg mx-auto"
                 >
-                  
-                  {/* Knockout Failure / Screening Path */}
-                  {displayHasFailedKnockouts ? (
-                    <div className="space-y-6">
-                      <div className="bg-rose-50 border border-rose-100 p-8 rounded-3xl text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-rose-500/[0.02] rounded-full blur-[50px]" />
-                        <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-200">
-                          <ShieldAlert size={32} />
-                        </div>
-                        <h3 className="text-xl font-display font-bold text-rose-800 mb-2">Model Mismatch Detected</h3>
-                        <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed font-light">
-                          Our Surgical Practice Growth Partnership relies on consistent long-term investment models and strict geographic exclusivity. Your selected parameters suggest we may not be the optimal fit at this stage.
-                        </p>
-                      </div>
-
-                      <div className="space-y-4 pl-4 border-l-2 border-rose-400">
-                        {displayFailedKnockout1 && (
-                          <div className="space-y-1">
-                            <h4 className="font-bold text-slate-800 text-xs sm:text-sm">Consistent Investment Filter</h4>
-                            <p className="text-slate-600 text-xs font-light">{knockouts[0].errorMsg}</p>
-                          </div>
-                        )}
-                        {displayFailedKnockout2 && (
-                          <div className="space-y-1 pt-2">
-                            <h4 className="font-bold text-slate-800 text-xs sm:text-sm">Specialty Exclusivity Filter</h4>
-                            <p className="text-slate-600 text-xs font-light">{knockouts[1].errorMsg}</p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 mt-6">
-                        <h4 className="font-bold text-slate-800 text-xs sm:text-sm mb-2">Would you like to discuss custom alternative strategies?</h4>
-                        <p className="text-slate-600 text-xs leading-relaxed mb-4 font-light">
-                          For high-volume centers, we sometimes construct customized pilot models to help align internal leadership prior to deploying the full exclusivity package.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                          <a
-                            href={getWhatsAppLink()}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-6 rounded-2xl transition-all text-xs sm:text-sm shadow-sm cursor-pointer"
-                          >
-                            <MessageSquare size={16} />
-                            Schedule Partnership Discussion
-                          </a>
-                          <Link
-                            to="/"
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-semibold py-3.5 px-6 rounded-2xl transition-all text-xs sm:text-sm cursor-pointer"
-                          >
-                            Return to Dashboard
-                          </Link>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={handleReset}
-                        className="text-slate-400 hover:text-slate-600 text-xs font-semibold block mx-auto underline mt-4 cursor-pointer"
-                      >
-                        Restart Diagnostic Audit
-                      </button>
+                  <div className="relative">
+                    {/* Pulsing light rings */}
+                    <div className="absolute inset-0 rounded-full bg-emerald-500/10 blur-xl animate-pulse scale-125" />
+                    <div className="relative w-20 h-20 bg-gradient-to-tr from-emerald-500 to-teal-400 text-white rounded-full flex items-center justify-center border border-emerald-300/30 shadow-lg shadow-emerald-500/20">
+                      <CheckCircle2 size={38} className="stroke-[2.5]" />
                     </div>
-                  ) : (
-                    
-                    // Successful Insights Report Presentation (Completely Hides Scores!)
-                    <div className="space-y-10">
-                      
-                      {/* Breathtaking Success Header with check badge */}
-                      <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 text-slate-900 p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-200">
-                        <div className="absolute inset-0 pointer-events-none opacity-20">
-                          <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500 rounded-full blur-3xl animate-pulse" />
-                        </div>
+                  </div>
 
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                          <div className="space-y-2">
-                            <div className="inline-flex items-center gap-2 text-emerald-700 font-bold text-xs tracking-wider uppercase bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-100">
-                              <ShieldCheck size={14} className="shrink-0 animate-pulse text-emerald-500" />
-                              Alignment Approved
-                            </div>
-                            <h3 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-slate-900">
-                              {displayLeadName}
-                            </h3>
-                            <p className="text-slate-500 text-xs sm:text-sm font-medium">
-                              Facility: <span className="text-slate-800 font-semibold">{displayLeadHospital}</span> • Area: <span className="text-slate-800 font-semibold">{displayLeadCity}</span>
-                            </p>
-                          </div>
+                  <div className="space-y-4">
+                    <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 tracking-tight leading-tight">
+                      Assessment Submitted Successfully!
+                    </h3>
+                    <div className="h-[2px] w-12 bg-emerald-500 mx-auto rounded-full" />
+                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-light px-2 sm:px-6">
+                      Thank you for completing the assessment. Your submission has been received successfully. Our Chief Consultant will connect with you within 24 hours.
+                    </p>
+                  </div>
 
-                          {/* Premium Success Scale animation Check Badge */}
-                          <motion.div 
-                            initial={{ scale: 0, rotate: -20 }}
-                            animate={{ scale: 1, rotate: 0 }}
-                            transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-                            className="bg-white border border-gray-200 p-4.5 rounded-2xl shrink-0 flex items-center gap-3.5 shadow-sm"
-                          >
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center shrink-0 border border-emerald-400/20 shadow-sm shadow-emerald-500/10">
-                              <motion.svg
-                                className="w-6 h-6 stroke-[3]"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                              >
-                                <motion.path
-                                  initial={{ pathLength: 0 }}
-                                  animate={{ pathLength: 1 }}
-                                  transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </motion.svg>
-                            </div>
-                            <div>
-                              <span className="block text-[10px] uppercase font-bold tracking-widest text-slate-400">STATUS COMPATIBILITY</span>
-                              <span className="text-sm font-extrabold text-emerald-600">
-                                Approved Partner Match
-                              </span>
-                            </div>
-                          </motion.div>
-                        </div>
-
-                        <div className="h-[1px] bg-gray-200 my-5" />
-                        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed italic font-light">
-                          "Based on your operational readiness audit and geographic practice inputs, we have verified high strategic alignment with our Surgical Practice Growth playbook."
-                        </p>
-                      </div>
-
-                      {/* Strengths & Opportunities (Personalized Insights replace the score numbers!) */}
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-2.5">
-                          <Activity size={18} className="text-emerald-500" />
-                          <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-500">
-                            Custom Strategic Insights Summary
-                          </h4>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Strengths Column */}
-                          <div className="space-y-4">
-                            <h5 className="text-xs font-bold uppercase text-emerald-600 tracking-wider flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                              Practice Core Strengths
-                            </h5>
-                            <div className="space-y-3.5">
-                              {displayInsights.strengths.map((str, sIdx) => (
-                                <motion.div 
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: sIdx * 0.1 }}
-                                  key={sIdx} 
-                                  className="bg-white border border-gray-200 p-5 rounded-2xl space-y-1.5 hover:border-gray-300 transition-colors shadow-sm"
-                                >
-                                  <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-900">
-                                    <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
-                                    <span>{str.title}</span>
-                                  </div>
-                                  <p className="text-slate-600 text-xs leading-relaxed font-light pl-6">
-                                    {str.desc}
-                                  </p>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Opportunities Column */}
-                          <div className="space-y-4">
-                            <h5 className="text-xs font-bold uppercase text-primary-600 tracking-wider flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-primary-500 animate-ping" />
-                              Growth Acceleration Levers
-                            </h5>
-                            <div className="space-y-3.5">
-                              {displayInsights.opportunities.map((opp, oIdx) => (
-                                <motion.div 
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: oIdx * 0.1 }}
-                                  key={oIdx} 
-                                  className="bg-white border border-gray-200 p-5 rounded-2xl space-y-1.5 hover:border-gray-300 transition-colors shadow-sm"
-                                >
-                                  <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-900">
-                                    <Zap size={16} className="text-primary-500 shrink-0 animate-pulse" />
-                                    <span>{opp.title}</span>
-                                  </div>
-                                  <p className="text-slate-600 text-xs leading-relaxed font-light pl-6">
-                                    {opp.desc}
-                                  </p>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Strategic Concept Message */}
-                      <div className="bg-gray-50 border border-gray-200 p-6 rounded-2xl text-slate-600 text-xs sm:text-sm space-y-2 leading-relaxed font-light">
-                        <div className="flex items-center gap-2 text-slate-800 font-bold text-xs mb-1">
-                          <BookOpen size={14} className="text-primary-500" />
-                          <span>Professional Partnership Code</span>
-                        </div>
-                        Just like complex surgical procedures require an accurate diagnostic baseline, our partnership models do not deploy general marketing campaigns. Your diagnostic inputs verify eligibility for our full geographic exclusivity expansion roadmap.
-                      </div>
-
-                      {/* Prescribed Growth Package Recommendation */}
-                      <div className="bg-white border-2 border-primary-500 p-6 sm:p-8 rounded-3xl shadow-md relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-primary-500 text-white text-[9px] uppercase font-extrabold tracking-widest px-4 py-1.5 rounded-bl-xl">
-                          RECOMMENDED ACTION ROADMAP
-                        </div>
-
-                        <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
-                          PRESCRIBED SYSTEM
-                        </span>
-
-                        <h3 className="text-xl sm:text-2xl font-display font-black text-slate-900 mt-4">
-                          {displayRecommendedPackage.title}
-                        </h3>
-                        
-                        <p className="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed font-light">
-                          {displayRecommendedPackage.description}
-                        </p>
-
-                        <div className="h-[1px] bg-gray-150 my-5" />
-
-                        <ul className="space-y-3">
-                          {displayRecommendedPackage.bullets.map((bullet, bIdx) => (
-                            <li key={bIdx} className="flex items-start gap-2.5 text-xs text-slate-600 font-medium">
-                              <span className="w-5 h-5 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center shrink-0 border border-primary-100 mt-0.5">
-                                <Zap size={10} />
-                              </span>
-                              <span className="font-light leading-relaxed">{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Action Call to Claim the Consultation with required CTAs */}
-                      <div className="bg-gradient-to-r from-slate-50 via-primary-50/20 to-slate-50 text-slate-900 p-6 sm:p-8 rounded-3xl text-center space-y-6 border border-gray-200 shadow-sm">
-                        <div className="max-w-md mx-auto space-y-2">
-                          <h3 className="text-lg sm:text-xl font-display font-bold text-slate-900">Lock in your Custom Strategy Consultation</h3>
-                          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-light">
-                            Claim your detailed 30–45 minute surgical catchment diagnostic meeting. We will map demographic patient volumes and evaluate exclusivity eligibility for your zip codes.
-                          </p>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                          <a
-                            href={getWhatsAppLink()}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white font-bold py-4 px-8 rounded-2xl transition-all text-sm shadow-md shadow-primary-600/10 cursor-pointer"
-                          >
-                            <MessageSquare size={18} />
-                            Schedule Partnership Discussion
-                          </a>
-                          <Link
-                            to="/"
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-slate-700 font-semibold py-4 px-8 rounded-2xl transition-all text-sm cursor-pointer border border-gray-200"
-                          >
-                            Return to Dashboard
-                          </Link>
-                        </div>
-                      </div>
-
-                    </div>
-                  )}
-
+                  <div className="pt-4 w-full">
+                    <Link
+                      to="/"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-4 px-10 rounded-2xl transition-all duration-300 text-sm shadow-lg shadow-primary-500/15 hover:shadow-primary-500/25 active:scale-[0.98] cursor-pointer"
+                    >
+                      Return to Dashboard
+                    </Link>
+                  </div>
                 </motion.div>
               )}
 
