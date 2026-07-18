@@ -280,49 +280,15 @@ const staticParticles = [
 const GlowingBackground = React.memo(() => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 select-none bg-white">
-      {/* Soft Moving light blobs */}
-      <motion.div
-        animate={{
-          scale: [1, 1.1, 0.95, 1],
-          x: [0, 15, -10, 0],
-          y: [0, -20, 15, 0]
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/4 left-1/4 w-[450px] h-[450px] bg-indigo-50/40 rounded-full blur-[130px]"
-      />
-      <motion.div
-        animate={{
-          scale: [1, 0.95, 1.05, 1],
-          x: [0, -15, 10, 0],
-          y: [0, 15, -15, 0]
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-emerald-50/40 rounded-full blur-[150px]"
-      />
-      <motion.div
-        animate={{
-          opacity: [0.1, 0.25, 0.1]
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/2 right-10 w-[350px] h-[350px] bg-blue-50/30 rounded-full blur-[110px]"
-      />
+      {/* Soft Static light blobs */}
+      <div className="absolute top-1/4 left-1/4 w-[450px] h-[450px] bg-indigo-50/40 rounded-full blur-[130px]" />
+      <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-emerald-50/40 rounded-full blur-[150px]" />
+      <div className="absolute top-1/2 right-10 w-[350px] h-[350px] bg-blue-50/30 rounded-full blur-[110px]" />
 
       {/* Floating Glowing Circles / Light Particles */}
       <div className="absolute inset-0">
         {staticParticles.map((pt, i) => (
-          <motion.div
+          <div
             key={i}
             className="absolute rounded-full bg-emerald-500/10 blur-[1px]"
             style={{
@@ -330,17 +296,7 @@ const GlowingBackground = React.memo(() => {
               height: pt.height,
               top: pt.top,
               left: pt.left,
-            }}
-            animate={{
-              y: [0, pt.yOffset, 0],
-              x: [0, pt.xOffset, 0],
-              opacity: [0.15, 0.4, 0.15]
-            }}
-            transition={{
-              duration: pt.duration,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: pt.delay
+              opacity: 0.2
             }}
           />
         ))}
@@ -350,7 +306,7 @@ const GlowingBackground = React.memo(() => {
       {backgroundIcons.map((item, index) => {
         const IconComponent = item.Icon;
         return (
-          <motion.div
+          <div
             key={index}
             className="absolute text-slate-400/5 hidden md:block"
             style={{
@@ -358,19 +314,9 @@ const GlowingBackground = React.memo(() => {
               left: item.left,
               right: item.right,
             }}
-            animate={{
-              y: [0, -12, 0],
-              rotate: [0, 4, -4, 0]
-            }}
-            transition={{
-              duration: 7,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: item.delay
-            }}
           >
             <IconComponent size={24} className="stroke-[1.5]" />
-          </motion.div>
+          </div>
         );
       })}
     </div>
@@ -395,7 +341,9 @@ const OptimizedInput: React.FC<{
     const val = e.target.value;
     setLocalVal(val);
     onValueChange(val); // instantaneous ref update
-    onClearError();     // instant error clearing
+    if (hasError) {
+      onClearError();   // clear error only if we actually have one
+    }
   };
 
   const handleBlur = () => {
@@ -1260,7 +1208,7 @@ Thank you!`;
         )}
 
         {/* Main premium animated-border glass-white card container */}
-        <div ref={containerRef} className="relative p-[1px] rounded-[20px] overflow-hidden bg-slate-200/60 shadow-2xl shadow-slate-200/50 transition-all duration-300">
+        <div ref={containerRef} className="relative p-[1px] rounded-[20px] overflow-hidden bg-slate-200/60 shadow-2xl shadow-slate-200/50">
           
           <div 
             ref={containerGlowRef}
