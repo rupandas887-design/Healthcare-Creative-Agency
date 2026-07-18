@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -391,26 +391,14 @@ const OptimizedInput: React.FC<{
     setLocalVal(value || "");
   }, [value]);
 
-  const debouncedUpdate = useRef<any>(null);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setLocalVal(val);
-    onClearError();
-    
-    if (debouncedUpdate.current) {
-      clearTimeout(debouncedUpdate.current);
-    }
-    
-    debouncedUpdate.current = setTimeout(() => {
-      onValueChange(val);
-    }, 150); // super fast debounce for instant update but zero keystroke lag
+    onValueChange(val); // instantaneous ref update
+    onClearError();     // instant error clearing
   };
 
   const handleBlur = () => {
-    if (debouncedUpdate.current) {
-      clearTimeout(debouncedUpdate.current);
-    }
     onValueChange(localVal);
   };
 
@@ -421,7 +409,7 @@ const OptimizedInput: React.FC<{
       ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500/10 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)]"
       : "border-slate-200 hover:border-primary-400 focus:border-primary-500 focus:ring-primary-500/10 focus:shadow-[0_0_12px_rgba(59,130,246,0.1)]";
 
-  const className = `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[16px] border ${borderClass} focus:ring-4 focus:outline-none bg-white transition-all duration-300 font-medium text-slate-900 placeholder-slate-400 text-sm shadow-sm hover:shadow-md`;
+  const className = `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[16px] border ${borderClass} focus:ring-4 focus:outline-none bg-white transition-colors duration-150 font-medium text-slate-900 placeholder-slate-400 text-sm shadow-sm hover:shadow-md`;
 
   return (
     <div className="relative">
@@ -446,6 +434,7 @@ const OptimizedInput: React.FC<{
 
 export default function Assessment() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const containerGlowRef = useRef<HTMLDivElement>(null);
 
   const scrollToContainer = () => {
     if (!containerRef.current) return;
@@ -483,16 +472,6 @@ export default function Assessment() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Track cursor coordinates for the mouse-follow spot glow effect
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setCoords({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
   // New multi-step design:
   // step === 0: Lead Form
   // step >= 1 && step <= 14: Individual questions
@@ -502,6 +481,28 @@ export default function Assessment() {
   // step === 18: Personalized Insights & Prescribed Recommendation Report
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
+
+  // Performance optimized spotlight glow (no state/react re-render on mouse move)
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      if (!containerGlowRef.current) return;
+      const rect = containerGlowRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      containerGlowRef.current.style.setProperty('--x', `${x}px`);
+      containerGlowRef.current.style.setProperty('--y', `${y}px`);
+    };
+
+    const el = containerGlowRef.current;
+    if (el) {
+      el.addEventListener('mousemove', handleMove);
+    }
+    return () => {
+      if (el) {
+        el.removeEventListener('mousemove', handleMove);
+      }
+    };
+  }, [step]);
 
   useEffect(() => {
     // Only scroll if we are actively moving between steps
@@ -513,7 +514,7 @@ export default function Assessment() {
     }
   }, [step]);
 
-  // User Contact Lead Info
+  // User Contact Lead Info (State for submission and page-to-page display)
   const [lead, setLead] = useState({
     name: '',
     hospital: '',
@@ -521,6 +522,83 @@ export default function Assessment() {
     email: '',
     city: ''
   });
+
+  // Ref to hold keystrokes synchronously and avoid parent re-renders while typing
+  const leadRef = useRef({
+    name: '',
+    hospital: '',
+    mobile: '',
+    email: '',
+    city: ''
+  });
+
+  // Keep ref synchronized when state is modified externally (e.g. resets)
+  useEffect(() => {
+    leadRef.current = lead;
+  }, [lead]);
+
+  // Stable callbacks for input changes updating ref directly
+  const handleNameChange = useCallback((val: string) => {
+    leadRef.current.name = val;
+  }, []);
+
+  const handleHospitalChange = useCallback((val: string) => {
+    leadRef.current.hospital = val;
+  }, []);
+
+  const handleMobileChange = useCallback((val: string) => {
+    leadRef.current.mobile = val;
+  }, []);
+
+  const handleEmailChange = useCallback((val: string) => {
+    leadRef.current.email = val;
+  }, []);
+
+  const handleCityChange = useCallback((val: string) => {
+    leadRef.current.city = val;
+  }, []);
+
+  // Stable callbacks for clearing form errors selectively
+  const handleClearNameError = useCallback(() => {
+    setFormErrors(prev => {
+      if (!prev.name) return prev;
+      const { name, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const handleClearHospitalError = useCallback(() => {
+    setFormErrors(prev => {
+      if (!prev.hospital) return prev;
+      const { hospital, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const handleClearMobileError = useCallback(() => {
+    setFormErrors(prev => {
+      if (!prev.mobile) return prev;
+      const { mobile, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const handleClearEmailError = useCallback(() => {
+    setFormErrors(prev => {
+      if (!prev.email) return prev;
+      const { email, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const handleClearCityError = useCallback(() => {
+    setFormErrors(prev => {
+      if (!prev.city) return prev;
+      const { city, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const getInputClassName = (fieldName: keyof typeof lead, value: string, hasError: boolean) => {
@@ -531,7 +609,7 @@ export default function Assessment() {
         ? "border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500/10 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)]"
         : "border-slate-200 hover:border-primary-400 focus:border-primary-500 focus:ring-primary-500/10 focus:shadow-[0_0_12px_rgba(59,130,246,0.1)]";
 
-    return `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[16px] border ${borderClass} focus:ring-4 focus:outline-none bg-white transition-all duration-300 font-medium text-slate-900 placeholder-slate-400 text-sm shadow-sm hover:shadow-md`;
+    return `w-full h-[52px] min-h-[52px] px-5 py-3.5 rounded-[16px] border ${borderClass} focus:ring-4 focus:outline-none bg-white transition-colors duration-150 font-medium text-slate-900 placeholder-slate-400 text-sm shadow-sm hover:shadow-md`;
   };
 
   // Answers State: maps question ID to index of the chosen option
@@ -604,19 +682,20 @@ export default function Assessment() {
   // Validation functions
   const validateLeadForm = () => {
     const errors: Record<string, string> = {};
-    if (!lead.name.trim()) errors.name = 'Full Name is required';
-    if (!lead.hospital.trim()) errors.hospital = 'Hospital / Clinic name is required';
-    if (!lead.mobile.trim()) {
+    const currentLead = leadRef.current;
+    if (!currentLead.name.trim()) errors.name = 'Full Name is required';
+    if (!currentLead.hospital.trim()) errors.hospital = 'Hospital / Clinic name is required';
+    if (!currentLead.mobile.trim()) {
       errors.mobile = 'WhatsApp mobile number is required';
-    } else if (!/^\+?[0-9\s-]{10,15}$/.test(lead.mobile.replace(/\s+/g, ''))) {
+    } else if (!/^\+?[0-9\s-]{10,15}$/.test(currentLead.mobile.replace(/\s+/g, ''))) {
       errors.mobile = 'Please enter a valid mobile number';
     }
-    if (!lead.email.trim()) {
+    if (!currentLead.email.trim()) {
       errors.email = 'Email address is required';
-    } else if (!/\S+@\S+\.\S+/.test(lead.email)) {
+    } else if (!/\S+@\S+\.\S+/.test(currentLead.email)) {
       errors.email = 'Please enter a valid email address';
     }
-    if (!lead.city.trim()) errors.city = 'City of practice is required';
+    if (!currentLead.city.trim()) errors.city = 'City of practice is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -624,6 +703,7 @@ export default function Assessment() {
 
   const handleNextFromLead = () => {
     if (validateLeadForm()) {
+      setLead({ ...leadRef.current });
       setDirection(1);
       setStep(1);
     }
@@ -1183,11 +1263,11 @@ Thank you!`;
         <div ref={containerRef} className="relative p-[1px] rounded-[20px] overflow-hidden bg-slate-200/60 shadow-2xl shadow-slate-200/50 transition-all duration-300">
           
           <div 
-            onMouseMove={handleMouseMove}
+            ref={containerGlowRef}
             className="relative bg-white/95 backdrop-blur-3xl rounded-[19px] overflow-hidden"
             style={{
-              '--x': `${coords.x}px`,
-              '--y': `${coords.y}px`,
+              '--x': '0px',
+              '--y': '0px',
             } as React.CSSProperties}
           >
             {/* Spotlight glow following pointer */}
@@ -1257,16 +1337,8 @@ Thank you!`;
                         value={lead.name}
                         placeholder="Dr. Rajesh Kumar"
                         hasError={!!formErrors.name}
-                        onValueChange={(val) => setLead(prev => ({ ...prev, name: val }))}
-                        onClearError={() => {
-                          if (formErrors.name) {
-                            setFormErrors(prev => {
-                              const copy = { ...prev };
-                              delete copy.name;
-                              return copy;
-                            });
-                          }
-                        }}
+                        onValueChange={handleNameChange}
+                        onClearError={handleClearNameError}
                       />
                       {formErrors.name && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
@@ -1285,16 +1357,8 @@ Thank you!`;
                         value={lead.hospital}
                         placeholder="Arogya Surgical Hospital"
                         hasError={!!formErrors.hospital}
-                        onValueChange={(val) => setLead(prev => ({ ...prev, hospital: val }))}
-                        onClearError={() => {
-                          if (formErrors.hospital) {
-                            setFormErrors(prev => {
-                              const copy = { ...prev };
-                              delete copy.hospital;
-                              return copy;
-                            });
-                          }
-                        }}
+                        onValueChange={handleHospitalChange}
+                        onClearError={handleClearHospitalError}
                       />
                       {formErrors.hospital && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
@@ -1314,16 +1378,8 @@ Thank you!`;
                         value={lead.mobile}
                         placeholder="+91 98449 55100"
                         hasError={!!formErrors.mobile}
-                        onValueChange={(val) => setLead(prev => ({ ...prev, mobile: val }))}
-                        onClearError={() => {
-                          if (formErrors.mobile) {
-                            setFormErrors(prev => {
-                              const copy = { ...prev };
-                              delete copy.mobile;
-                              return copy;
-                            });
-                          }
-                        }}
+                        onValueChange={handleMobileChange}
+                        onClearError={handleClearMobileError}
                       />
                       {formErrors.mobile && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
@@ -1343,16 +1399,8 @@ Thank you!`;
                         value={lead.email}
                         placeholder="drrajesh@gmail.com"
                         hasError={!!formErrors.email}
-                        onValueChange={(val) => setLead(prev => ({ ...prev, email: val }))}
-                        onClearError={() => {
-                          if (formErrors.email) {
-                            setFormErrors(prev => {
-                              const copy = { ...prev };
-                              delete copy.email;
-                              return copy;
-                            });
-                          }
-                        }}
+                        onValueChange={handleEmailChange}
+                        onClearError={handleClearEmailError}
                       />
                       {formErrors.email && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
@@ -1371,16 +1419,8 @@ Thank you!`;
                         value={lead.city}
                         placeholder="Bengaluru"
                         hasError={!!formErrors.city}
-                        onValueChange={(val) => setLead(prev => ({ ...prev, city: val }))}
-                        onClearError={() => {
-                          if (formErrors.city) {
-                            setFormErrors(prev => {
-                              const copy = { ...prev };
-                              delete copy.city;
-                              return copy;
-                            });
-                          }
-                        }}
+                        onValueChange={handleCityChange}
+                        onClearError={handleClearCityError}
                       />
                       {formErrors.city && (
                         <p className="text-xs text-rose-600 font-medium pl-1 flex items-center gap-1">
