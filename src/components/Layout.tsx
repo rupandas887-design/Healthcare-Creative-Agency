@@ -245,20 +245,36 @@ export default function Layout() {
         </div>
       </footer>
 
-      {/* Floating WhatsApp Button */}
-      <a
-        href="https://wa.me/919429693887"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg ring-4 ring-emerald-500/20 hover:bg-emerald-600 hover:scale-110 transition-all cursor-pointer group"
-        aria-label="Chat on WhatsApp"
-      >
-        <MessageCircle size={28} />
-        {/* Simple tooltip */}
-        <span className="absolute right-16 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-          Chat with us
-        </span>
-      </a>
+      {/* Floating Action Buttons (Call Now & WhatsApp) */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+        {/* Call Now Button */}
+        <a
+          href="tel:+919429693887"
+          className="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-lg ring-4 ring-primary-600/20 hover:bg-primary-700 hover:scale-110 transition-all cursor-pointer group relative"
+          aria-label="Call Now"
+        >
+          <Phone size={24} />
+          {/* Tooltip */}
+          <span className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-md">
+            Call Now
+          </span>
+        </a>
+
+        {/* Floating WhatsApp Button */}
+        <a
+          href="https://wa.me/919429693887"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg ring-4 ring-emerald-500/20 hover:bg-emerald-600 hover:scale-110 transition-all cursor-pointer group relative"
+          aria-label="Chat on WhatsApp"
+        >
+          <MessageCircle size={28} />
+          {/* Tooltip */}
+          <span className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-md">
+            Chat with us
+          </span>
+        </a>
+      </div>
     </div>
   );
 }
