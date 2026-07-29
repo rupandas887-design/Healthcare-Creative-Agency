@@ -223,7 +223,7 @@ export default function Layout() {
                 </li>
                 <li className="flex gap-3">
                   <Phone size={20} className="text-primary-500 shrink-0" />
-                  <span className="text-slate-400">+91 98449 55100</span>
+                  <a href="tel:+919429693887" className="text-slate-400 hover:text-white transition-colors">+91 94296 93887</a>
                 </li>
                 <li className="flex gap-3">
                   <Mail size={20} className="text-primary-500 shrink-0" />
@@ -247,7 +247,7 @@ export default function Layout() {
 
       {/* Floating WhatsApp Button */}
       <a
-        href="https://wa.me/919844955100"
+        href="https://wa.me/919429693887"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg ring-4 ring-emerald-500/20 hover:bg-emerald-600 hover:scale-110 transition-all cursor-pointer group"

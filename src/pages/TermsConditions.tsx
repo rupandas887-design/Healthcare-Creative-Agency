@@ -239,7 +239,7 @@ export default function TermsConditions() {
                   </p>
                   <div className="space-y-2 text-slate-700">
                     <p><strong>Email:</strong> <a href="mailto:acquireopd@gmail.com" className="text-primary-600 hover:underline font-medium">acquireopd@gmail.com</a></p>
-                    <p><strong>Phone / WhatsApp:</strong> +91 98449 55100</p>
+                    <p><strong>Phone / WhatsApp:</strong> +91 94296 93887</p>
                     <p><strong>Office Address:</strong> Acquire OPD, 1704, 17th Cross Rd, Govindaraja Nagar Ward, MC Layout, Vijayanagar, Bengaluru, Karnataka 560040</p>
                   </div>
                 </div>

@@ -1130,7 +1130,7 @@ Please contact me to review my custom Diagnostic Blueprint and schedule our 30-4
 
 Thank you!`;
 
-    return `https://wa.me/919844955100?text=${encodeURIComponent(prefilledText)}`;
+    return `https://wa.me/919429693887?text=${encodeURIComponent(prefilledText)}`;
   };
 
   // Helper for progress calculation
@@ -1324,7 +1324,7 @@ Thank you!`;
                       <OptimizedInput
                         type="tel"
                         value={lead.mobile}
-                        placeholder="+91 98449 55100"
+                        placeholder="+91 94296 93887"
                         hasError={!!formErrors.mobile}
                         onValueChange={handleMobileChange}
                         onClearError={handleClearMobileError}

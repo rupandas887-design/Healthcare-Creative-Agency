@@ -173,7 +173,7 @@ Please contact me regarding my free hospital growth audit.
 Thank you.`;
 
       const encodedText = encodeURIComponent(prefilledText);
-      const whatsappUrl = `https://wa.me/919844955100?text=${encodedText}`;
+      const whatsappUrl = `https://wa.me/919429693887?text=${encodedText}`;
 
       // Automatically redirect to WhatsApp after 2 seconds to let the user see the success message
       setTimeout(() => {
@@ -245,8 +245,8 @@ Thank you.`;
                   <div>
                     <h3 className="font-bold text-slate-900 mb-1">WhatsApp Us</h3>
                     <p className="text-slate-500 text-sm mb-2">Fastest way to get a response</p>
-                    <a href="https://wa.me/919844955100" className="text-primary-600 font-medium hover:text-primary-700 transition-colors">
-                      +91 98449 55100
+                    <a href="https://wa.me/919429693887" className="text-primary-600 font-medium hover:text-primary-700 transition-colors">
+                      +91 94296 93887
                     </a>
                   </div>
                 </div>
@@ -261,8 +261,8 @@ Thank you.`;
                       Monday to Saturday<br />
                       9:00 AM – 7:00 PM
                     </p>
-                    <a href="tel:+919844955100" className="text-primary-600 font-medium hover:text-primary-700 transition-colors">
-                      +91 98449 55100
+                    <a href="tel:+919429693887" className="text-primary-600 font-medium hover:text-primary-700 transition-colors">
+                      +91 94296 93887
                     </a>
                   </div>
                 </div>
@@ -377,7 +377,7 @@ Thank you.`;
                           name="mobile"
                           required
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all bg-slate-50 focus:bg-white"
-                          placeholder="+91 98449 55100"
+                          placeholder="+91 94296 93887"
                         />
                       </div>
                       <div>
